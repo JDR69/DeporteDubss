@@ -25,17 +25,17 @@ const Navbar = ({ isLoggedIn = false, onLogout }) => {
 
   return (
     <div className="w-full" style={{ background: green }}>
-      <nav className="w-full max-w-4xl mx-auto rounded-lg shadow-lg flex items-center justify-between px-4 py-2" style={{ background: green }}>
+      <nav className="w-full max-w-4xl mx-auto rounded-lg shadow-lg flex flex-col md:flex-row items-center justify-between px-2 md:px-4 py-2" style={{ background: green }}>
         {/* Logo */}
         <div className="flex items-center">
           <span className="text-2xl font-bold text-white">FlyonUI</span>
         </div>
         {/* Center: Dropdown buttons */}
-        <div className="flex-1 flex justify-center gap-6">
+  <div className="w-full md:w-auto flex flex-col md:flex-row justify-center items-center gap-2 md:gap-6">
           {/* Dropdown 1 */}
-          <div className="relative" ref={dropdownRefs[0]}>
+          <div className="relative w-full md:w-auto" ref={dropdownRefs[0]}>
             <button
-              className="text-white font-medium px-2 py-1 flex items-center gap-1 focus:outline-none"
+              className="text-white font-medium px-2 py-1 flex items-center gap-1 focus:outline-none w-full md:w-auto cursor-pointer"
               onClick={() => setOpenDropdown(openDropdown === 0 ? null : 0)}
             >
               Products
@@ -43,16 +43,16 @@ const Navbar = ({ isLoggedIn = false, onLogout }) => {
             </button>
             {openDropdown === 0 && (
               <div className="absolute left-0 mt-2 w-40 rounded shadow-lg z-10" style={{ background: green }}>
-                <Link to="/templates" className="block px-4 py-2 text-white hover:bg-green-700" onClick={() => setOpenDropdown(null)}>Templates</Link>
-                <Link to="/ui-kits" className="block px-4 py-2 text-white hover:bg-green-700" onClick={() => setOpenDropdown(null)}>UI Kits</Link>
-                <Link to="/components" className="block px-4 py-2 text-white hover:bg-green-700" onClick={() => setOpenDropdown(null)}>Components</Link>
+                <Link to="/templates" className="block px-4 py-2 text-white hover:bg-green-700 cursor-pointer" onClick={() => setOpenDropdown(null)}>Templates</Link>
+                <Link to="/ui-kits" className="block px-4 py-2 text-white hover:bg-green-700 cursor-pointer" onClick={() => setOpenDropdown(null)}>UI Kits</Link>
+                <Link to="/components" className="block px-4 py-2 text-white hover:bg-green-700 cursor-pointer" onClick={() => setOpenDropdown(null)}>Components</Link>
               </div>
             )}
           </div>
           {/* Dropdown 2 */}
-          <div className="relative" ref={dropdownRefs[1]}>
+          <div className="relative w-full md:w-auto" ref={dropdownRefs[1]}>
             <button
-              className="text-white font-medium px-2 py-1 flex items-center gap-1 focus:outline-none"
+              className="text-white font-medium px-2 py-1 flex items-center gap-1 focus:outline-none w-full md:w-auto cursor-pointer"
               onClick={() => setOpenDropdown(openDropdown === 1 ? null : 1)}
             >
               About
@@ -60,16 +60,16 @@ const Navbar = ({ isLoggedIn = false, onLogout }) => {
             </button>
             {openDropdown === 1 && (
               <div className="absolute left-0 mt-2 w-40 rounded shadow-lg z-10" style={{ background: green }}>
-                <Link to="/about-us" className="block px-4 py-2 text-white hover:bg-green-700" onClick={() => setOpenDropdown(null)}>About Us</Link>
-                <Link to="/team" className="block px-4 py-2 text-white hover:bg-green-700" onClick={() => setOpenDropdown(null)}>Team</Link>
-                <Link to="/history" className="block px-4 py-2 text-white hover:bg-green-700" onClick={() => setOpenDropdown(null)}>History</Link>
+                <Link to="/about-us" className="block px-4 py-2 text-white hover:bg-green-700 cursor-pointer" onClick={() => setOpenDropdown(null)}>About Us</Link>
+                <Link to="/team" className="block px-4 py-2 text-white hover:bg-green-700 cursor-pointer" onClick={() => setOpenDropdown(null)}>Team</Link>
+                <Link to="/history" className="block px-4 py-2 text-white hover:bg-green-700 cursor-pointer" onClick={() => setOpenDropdown(null)}>History</Link>
               </div>
             )}
           </div>
           {/* Dropdown 3 */}
-          <div className="relative" ref={dropdownRefs[2]}>
+          <div className="relative w-full md:w-auto" ref={dropdownRefs[2]}>
             <button
-              className="text-white font-medium px-2 py-1 flex items-center gap-1 focus:outline-none"
+              className="text-white font-medium px-2 py-1 flex items-center gap-1 focus:outline-none w-full md:w-auto cursor-pointer"
               onClick={() => setOpenDropdown(openDropdown === 2 ? null : 2)}
             >
               Careers
@@ -77,19 +77,19 @@ const Navbar = ({ isLoggedIn = false, onLogout }) => {
             </button>
             {openDropdown === 2 && (
               <div className="absolute left-0 mt-2 w-40 rounded shadow-lg z-10" style={{ background: green }}>
-                <Link to="/jobs" className="block px-4 py-2 text-white hover:bg-green-700" onClick={() => setOpenDropdown(null)}>Jobs</Link>
-                <Link to="/internships" className="block px-4 py-2 text-white hover:bg-green-700" onClick={() => setOpenDropdown(null)}>Internships</Link>
-                <Link to="/benefits" className="block px-4 py-2 text-white hover:bg-green-700" onClick={() => setOpenDropdown(null)}>Benefits</Link>
+                <Link to="/jobs" className="block px-4 py-2 text-white hover:bg-green-700 cursor-pointer" onClick={() => setOpenDropdown(null)}>Jobs</Link>
+                <Link to="/internships" className="block px-4 py-2 text-white hover:bg-green-700 cursor-pointer" onClick={() => setOpenDropdown(null)}>Internships</Link>
+                <Link to="/benefits" className="block px-4 py-2 text-white hover:bg-green-700 cursor-pointer" onClick={() => setOpenDropdown(null)}>Benefits</Link>
               </div>
             )}
           </div>
         </div>
         {/* Login/Logout Button */}
-        <div>
+        <div className="w-full md:w-auto flex justify-end mt-2 md:mt-0">
           {isLoggedIn ? (
-              <button onClick={onLogout} className="bg-white text-green-700 font-semibold px-6 py-2 rounded-lg transition-colors hover:bg-green-100">Salir</button>
+              <button onClick={onLogout} className="bg-white text-green-700 font-semibold px-6 py-2 rounded-lg transition-colors hover:bg-green-100 flex items-center gap-2 cursor-pointer">Salir</button>
           ) : (
-            <Link to="/login" className="bg-white text-green-700 font-semibold px-6 py-2 rounded-lg transition-colors hover:bg-green-100">Salir</Link>
+            <Link to="/login" className="bg-white text-green-700 font-semibold px-6 py-2 rounded-lg transition-colors hover:bg-green-100 flex items-center gap-2 cursor-pointer">Salir</Link>
           )}
         </div>
       </nav>
