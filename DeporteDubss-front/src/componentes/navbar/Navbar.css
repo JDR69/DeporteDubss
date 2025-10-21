@@ -1,0 +1,133 @@
+/* --- Variables de Color (Opcional, pero recomendado) --- */
+:root {
+  --navbar-bg: #282c34;
+  --navbar-text: #ffffff;
+  --primary-color: #61dafb; /* Color de React (ejemplo) */
+  --primary-hover: #52b9d8;
+  --danger-color: #f0717c;
+  --danger-hover: #e64555;
+}
+
+/* --- Contenedor Principal de la Navbar --- */
+.navbar {
+  background-color: var(--navbar-bg);
+  color: var(--navbar-text);
+  padding: 0.75rem 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  height: 60px; /* Altura fija */
+  display: flex;
+  justify-content: center; /* Centra el contenido si la ventana es muy ancha */
+  align-items: center;
+}
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between; /* Distribuye los 3 bloques */
+  align-items: center;
+  width: 100%;
+  max-width: 1400px; /* Ancho máximo */
+}
+
+/* --- 1. Logo (Izquierda) --- */
+.navbar-logo a {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: transform 0.3s ease;
+}
+
+.navbar-logo a:hover {
+  transform: scale(1.05);
+}
+
+/* --- 2. Enlaces de Navegación (Centro) --- */
+.navbar-links {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 1.5rem; /* Espacio entre enlaces */
+}
+
+.navbar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem; /* Espacio entre icono y texto */
+  color: var(--navbar-text);
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 0.5rem 0.25rem;
+  border-bottom: 2px solid transparent; /* Línea inferior para hover */
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.navbar-link:hover,
+.navbar-link.active { /* Podrías añadir una clase 'active' con NavLink de react-router */
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+}
+
+/* --- 3. Iconos y Acciones (Derecha) --- */
+.navbar-icons {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem; /* Espacio entre iconos */
+}
+
+/* Estilo base para botones de icono */
+.navbar-icon-button {
+  background: transparent;
+  border: none;
+  color: var(--navbar-text);
+  font-size: 1.35rem; /* Tamaño de icono */
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.navbar-icon-button:hover {
+  color: var(--primary-color);
+  transform: scale(1.1);
+}
+
+/* Botón específico de Cerrar Sesión */
+.logout-button:hover {
+  color: var(--danger-color); /* Color rojo al pasar el mouse */
+}
+
+/* Botón de Iniciar Sesión */
+.navbar-button-login {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--primary-color);
+  color: var(--navbar-bg);
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+}
+
+.navbar-button-login:hover {
+  background-color: var(--primary-hover);
+}
+
+/* --- (Opcional) Adaptación móvil simple --- */
+/* Oculta los enlaces de texto y el botón de login en pantallas pequeñas */
+@media (max-width: 768px) {
+  .navbar-links {
+    display: none; /* Oculta los enlaces del centro */
+  }
+
+  /* Podrías añadir un menú hamburguesa para mostrar los enlaces */
+}
