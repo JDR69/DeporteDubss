@@ -39,7 +39,8 @@ export const AuthProvider = ({ children }) => {
       setUser(userData);
       
       // Navegamos DESPUÉS de actualizar el estado, usando el ID directo
-      navigate(`/dashboard/${userData.id}`);
+      // navigate(`/dashboard/${userData.id}`);
+      navigate('/perfil')
       
       return true;
     } catch (error) {

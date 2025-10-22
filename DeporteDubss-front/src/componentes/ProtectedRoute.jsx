@@ -4,7 +4,8 @@ import { useAuth } from "../context/AuthContext";
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth();
   // Si no hay usuario autenticado, redirige a login
-  if (!user || !user.email) {
+  console.log("ProtectedRoute - user:", user);
+  if (!user ) {
     return <Navigate to="/" replace />;
   }
   // Si está autenticado, muestra el contenido protegido

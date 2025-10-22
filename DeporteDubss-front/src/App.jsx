@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import LoginPage from "./pages/LoginPage"
+import PerfilPage from "./pages/PerfilPage.jsx"
 import Navbar from "./componentes/navbar/Navbar.jsx"
 import Dashboard from "./pages/Dashboard.jsx"
 import { AuthProvider } from "./context/AuthContext.jsx"
@@ -21,16 +22,16 @@ function App() {
             }
           />
           {/* Ejemplo de otra ruta privada */}
-          {/*
+          
           <Route
             path="/perfil"
             element={
               <ProtectedRoute>
-                <Perfil />
+                <PerfilPage />
               </ProtectedRoute>
             }
           />
-          */}
+         
         </Routes>
       </AuthProvider>
     </BrowserRouter>
