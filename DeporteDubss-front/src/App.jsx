@@ -5,6 +5,10 @@ import Navbar from "./componentes/navbar/Navbar.jsx"
 import Dashboard from "./pages/Dashboard.jsx"
 import { AuthProvider } from "./context/AuthContext.jsx"
 import ProtectedRoute from "./componentes/ProtectedRoute"
+import CampeonatosPage from "./pages/CampeonatosPage.jsx"
+import RolPermisos from "./pages/RolPermisos.jsx"
+import InstalacionesPage from "./pages/InstalacionesPage.jsx"
+import EquipoPage from "./pages/EquipoPage.jsx"
 
 function App() {
   return (
@@ -31,7 +35,42 @@ function App() {
               </ProtectedRoute>
             }
           />
+       
+          <Route
+            path="/instalaciones"
+            element={
+              <ProtectedRoute>
+                <InstalacionesPage />
+              </ProtectedRoute>
+            }
+          />
+          
+          <Route
+            path="/equipo"
+            element={
+              <ProtectedRoute>
+                <EquipoPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/campeonatos"
+            element={
+              <ProtectedRoute>
+                <CampeonatosPage />
+              </ProtectedRoute>
+            }
+          />
+          
          
+          <Route
+            path="/rol-permisos"
+            element={
+              <ProtectedRoute>
+                <RolPermisos />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
