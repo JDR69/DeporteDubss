@@ -38,7 +38,7 @@ const Navbar = ({ isLoggedIn = false, onLogout }) => {
               className="text-white font-medium px-2 py-1 flex items-center gap-1 focus:outline-none w-full md:w-auto cursor-pointer"
               onClick={() => setOpenDropdown(openDropdown === 0 ? null : 0)}
             >
-              Products
+              Services
               <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
             </button>
             {openDropdown === 0 && (
