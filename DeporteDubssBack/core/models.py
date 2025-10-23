@@ -57,6 +57,7 @@ class Campeonato(models.Model):
 	nombre = models.CharField(max_length=30)
 	fecha_inicio = models.DateField()
 	fecha_fin = models.DateField()
+	logo = models.CharField(max_length=100)
 	estado = models.BooleanField()
 	organizador = models.ForeignKey(Organizador, on_delete=models.CASCADE)
 	deporte = models.ForeignKey(Deporte, on_delete=models.CASCADE)
