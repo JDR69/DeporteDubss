@@ -17,7 +17,8 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState({
     id: null,
-    email: null
+    email: null,
+    rol: null // "admin" o "delegado"
   });
 
   const signin = async (email, password) => {
@@ -27,9 +28,14 @@ export const AuthProvider = ({ children }) => {
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       // Creamos el objeto de usuario
+      // Simulación: si el email contiene "admin" es admin, si contiene "delegado" es delegado
+      let rol = "delegado";
+      if (email.includes("admin")) rol = "admin";
+      if (email.includes("delegado")) rol = "delegado";
       const userData = {
         id: 1,
         email: email,
+        rol: rol
       };
       
       // Guardamos en localStorage para persistencia
@@ -71,6 +77,7 @@ export const AuthProvider = ({ children }) => {
         setUser({
           id: null,
           email: null,
+          rol: null
         });
       } finally {
         setLoading(false);
@@ -86,6 +93,7 @@ export const AuthProvider = ({ children }) => {
     setUser({
       id: null,
       email: null,
+      rol: null
     });
     navigate('/');
   };
