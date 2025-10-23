@@ -9,6 +9,7 @@ import CampeonatosPage from "./pages/CampeonatosPage.jsx"
 import RolPermisos from "./pages/RolPermisos.jsx"
 import InstalacionesPage from "./pages/InstalacionesPage.jsx"
 import EquipoPage from "./pages/EquipoPage.jsx"
+import Home from "./pages/Home.jsx"
 
 function App() {
   return (
@@ -68,6 +69,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <RolPermisos />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/home"
+            element={
+              <ProtectedRoute>
+                <Home />
               </ProtectedRoute>
             }
           />
