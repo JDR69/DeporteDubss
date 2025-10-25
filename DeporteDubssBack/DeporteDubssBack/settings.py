@@ -27,7 +27,7 @@ environ.Env.read_env(str(BASE_DIR / '.env'))
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('SECRET_KEY')
+# SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('DEBUG', default=True)
@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core',
+    'Deportes',
+    'Usuarios',
     'rest_framework',
     'corsheaders',
 ]
@@ -98,11 +99,11 @@ WSGI_APPLICATION = 'DeporteDubssBack.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DB_NAME'),
-        'USER': env('DB_USER'),
-        'PASSWORD': env('DB_PASSWORD'),
-        'HOST': env('DB_HOST'),
-        'PORT': env('DB_PORT'),
+        'NAME': 'deportes_db',
+        'USER': 'postgres',
+        'PASSWORD': 'bot22rp',
+        'HOST': 'localhost',
+        'PORT': '5432',
         'OPTIONS': {
             # Fuerza UTF-8 para evitar problemas de decodificación en Windows
             'options': '-c client_encoding=UTF8'
@@ -110,6 +111,7 @@ DATABASES = {
     }
 }
 
+# DATABASE_URL="postgresql://postgres:bot22rp@localhost:5432/diagramaIA"
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
