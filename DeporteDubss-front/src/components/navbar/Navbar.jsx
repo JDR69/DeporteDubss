@@ -34,12 +34,15 @@ const Navbar = ({ isLoggedIn = false, onLogout }) => {
         </div>
         {/* Center: Links según rol */}
         <div className="w-full md:w-auto flex flex-col md:flex-row justify-center items-center gap-2 md:gap-6">
-          {/* ADMIN: rol-permisos, instalaciones, campeonatos */}
+          {/* ADMIN: rol-permisos, instalaciones, campeonatos, registrar usuario */}
           {user?.rol === "admin" && (
             <>
               <Link to="/rol-permisos" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Rol Permisos</Link>
               <Link to="/instalaciones" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Instalaciones</Link>
               <Link to="/campeonatos" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Campeonatos</Link>
+              <Link to="/categorias" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Categorías</Link>
+              <Link to="/deportes" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Deportes</Link>
+              <Link to={`/dashboard/${user?.id}/registrar-usuario`} className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Registrar Usuario</Link>
             </>
           )}
           {/* DELEGADO: campeonatos, equipo */}
@@ -47,6 +50,8 @@ const Navbar = ({ isLoggedIn = false, onLogout }) => {
             <>
               <Link to="/campeonatos" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Campeonatos</Link>
               <Link to="/equipo" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Equipo</Link>
+              <Link to="/categorias" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Categorías</Link>
+              <Link to="/deportes" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Deportes</Link>
             </>
           )}
         </div>
@@ -55,7 +60,7 @@ const Navbar = ({ isLoggedIn = false, onLogout }) => {
           {isLoggedIn ? (
               <button onClick={onLogout} className="bg-white text-green-700 font-semibold px-6 py-2 rounded-lg transition-colors hover:bg-green-100 flex items-center gap-2 cursor-pointer">Salir</button>
           ) : (
-            <Link to="/login" className="bg-white text-green-700 font-semibold px-6 py-2 rounded-lg transition-colors hover:bg-green-100 flex items-center gap-2 cursor-pointer">Salir</Link>
+            <Link to="/login" className="bg-white text-green-700 font-semibold px-6 py-2 rounded-lg transition-colors hover:bg-green-100 flex items-center gap-2 cursor-pointer">Iniciar sesión</Link>
           )}
         </div>
       </nav>

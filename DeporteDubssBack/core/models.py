@@ -47,10 +47,11 @@ class Categoria(models.Model):
 	id = models.AutoField(primary_key=True)
 	nombre = models.CharField(max_length=20)
 
+
 class Deporte(models.Model):
 	id = models.AutoField(primary_key=True)
 	nombre = models.CharField(max_length=20)
-	categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
+
 
 class Campeonato(models.Model):
 	id = models.AutoField(primary_key=True)
@@ -61,6 +62,7 @@ class Campeonato(models.Model):
 	estado = models.BooleanField()
 	organizador = models.ForeignKey(Organizador, on_delete=models.CASCADE)
 	deporte = models.ForeignKey(Deporte, on_delete=models.CASCADE)
+	categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, null=True, blank=True)
 
 class Historial(models.Model):
 	id = models.AutoField(primary_key=True)
