@@ -128,6 +128,35 @@ function PartidosPage() {
         setShowForm(false);
     };
 
+    // Helper functions to get names from IDs
+    const getEquipoName = (id) => {
+        if (!id) return 'Desconocido';
+        // Handle if it's already an object
+        if (typeof id === 'object' && id.Nombre) return id.Nombre;
+        const equipo = equipos.find(e => e.id === id);
+        return equipo ? equipo.Nombre : 'Desconocido';
+    };
+
+    const getInstalacionName = (id) => {
+        if (!id) return 'N/A';
+        if (typeof id === 'object' && id.Nombre) return id.Nombre;
+        const instalacion = instalaciones.find(i => i.id === id);
+        return instalacion ? instalacion.Nombre : 'N/A';
+    };
+
+    const getResultadoText = (id) => {
+        if (!id) return 'Pendiente';
+        if (typeof id === 'object') return `${id.Goles_Local} - ${id.Goles_Visitante}`;
+        
+        const resultado = resultados.find(r => r.id === id);
+        return resultado ? `${resultado.Goles_Local} - ${resultado.Goles_Visitante}` : 'Pendiente';
+    };
+    
+    const getFixtureName = (id) => {
+        const fixtureId = typeof id === 'object' ? id.id : id;
+        return `Jornada ${fixtureId}`;
+    };
+
     return (
         <div className="min-h-screen bg-white py-8 px-4">
             <Loading show={loading} message="Procesando..." />
@@ -250,7 +279,7 @@ function PartidosPage() {
                             <thead className="bg-[#A7F3D0]">
                                 <tr>
                                     <th className="px-4 py-2 text-left text-[#065F46] font-bold">ID</th>
-                                    <th className="px-4 py-2 text-left text-[#065F46] font-bold">Fixture</th>
+                                    <th className="px-4 py-2 text-left text-[#065F46] font-bold">Jornada</th>
                                     <th className="px-4 py-2 text-left text-[#065F46] font-bold">Equipos</th>
                                     <th className="px-4 py-2 text-left text-[#065F46] font-bold">Instalación</th>
                                     <th className="px-4 py-2 text-left text-[#065F46] font-bold">Resultado</th>
@@ -262,19 +291,16 @@ function PartidosPage() {
                                     <tr key={partido.id} className={index % 2 === 0 ? 'bg-white' : 'bg-[#F3F4F6]'}>
                                         <td className="px-4 py-2 text-[#065F46]">{partido.id}</td>
                                         <td className="px-4 py-2 text-[#065F46]">
-                                            Fixture #{partido.IDFixture?.id || partido.IDFixture}
+                                            {getFixtureName(partido.IDFixture)}
                                         </td>
                                         <td className="px-4 py-2 text-[#065F46]">
-                                            {partido.IDEquipo_Local?.Nombre || 'Local'} vs {partido.IDEquipo_Visitante?.Nombre || 'Visitante'}
+                                            {getEquipoName(partido.IDEquipo_Local)} vs {getEquipoName(partido.IDEquipo_Visitante)}
                                         </td>
                                         <td className="px-4 py-2 text-[#065F46]">
-                                            {partido.IDInstalacion?.Nombre || 'N/A'}
+                                            {getInstalacionName(partido.IDInstalacion)}
                                         </td>
                                         <td className="px-4 py-2 text-[#065F46] font-bold">
-                                            {partido.IDResultado ? 
-                                                `${partido.IDResultado.Goles_Local} - ${partido.IDResultado.Goles_Visitante}` : 
-                                                'Pendiente'
-                                            }
+                                            {getResultadoText(partido.IDResultado)}
                                         </td>
                                         <td className="px-4 py-2">
                                             <button

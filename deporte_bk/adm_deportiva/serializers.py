@@ -24,7 +24,7 @@ class FixtureSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Fixture
-        fields = ['id', 'IDFixture', 'IDCampeonato']
+        fields = ['id', 'IDFixture', 'IDCampeonato', 'Numero', 'Fecha']
         read_only_fields = ['id', 'IDFixture']
 
 
@@ -65,10 +65,19 @@ class HistorialSerializer(serializers.ModelSerializer):
     IDCampeonato = serializers.PrimaryKeyRelatedField(queryset=Campeonato.objects.all())
     IDEquipo = serializers.PrimaryKeyRelatedField(queryset=Equipo.objects.all())
     
+    # Read-only fields for display
+    CampeonatoNombre = serializers.CharField(source='IDCampeonato.Nombre', read_only=True)
+    EquipoNombre = serializers.CharField(source='IDEquipo.Nombre', read_only=True)
+    EquipoLogo = serializers.CharField(source='IDEquipo.Logo', read_only=True)
+
     class Meta:
         model = Historial
-        fields = ['id', 'IDHistorial', 'IDCampeonato', 'IDEquipo', 'Posicion', 'Puntos']
-        read_only_fields = ['id', 'IDHistorial']
+        fields = [
+            'id', 'IDHistorial', 'IDCampeonato', 'IDEquipo', 
+            'CampeonatoNombre', 'EquipoNombre', 'EquipoLogo',
+            'Posicion', 'Puntos', 'PJ', 'PG', 'PE', 'PP', 'GF', 'GC', 'DG'
+        ]
+        read_only_fields = ['id', 'IDHistorial', 'CampeonatoNombre', 'EquipoNombre', 'EquipoLogo']
 
 
 class EquipoSerializer(serializers.ModelSerializer):

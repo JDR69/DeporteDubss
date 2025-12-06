@@ -1,0 +1,11 @@
+nombre_campeonato,nombre_equipo_local,nombre_equipo_visitante,goles_local,goles_visitante,nombre_instalacion,fecha,estado_partido
+Liga Universitaria 2025,Los Leones,Las Aguilas,2,1,Estadio Universitario,2025-03-05 10:00:00,Finalizado
+Liga Universitaria 2025,Los Tigres,Las Panteras,1,1,Estadio Universitario,2025-03-05 12:00:00,Finalizado
+Liga Universitaria 2025,Los Lobos,Las Cobras,0,3,Coliseo Polideportivo,2025-03-06 14:00:00,Finalizado
+Liga Universitaria 2025,Los Osos,Las Hienas,2,2,Cancha de Pasto Sintetico,2025-03-06 16:00:00,Finalizado
+Liga Universitaria 2025,Los Tiburones,Las Orcas,1,0,Estadio Universitario,2025-03-07 10:00:00,Finalizado
+Liga Universitaria 2025,Los Leones,Los Tigres,3,0,Estadio Universitario,2025-03-12 10:00:00,Finalizado
+Liga Universitaria 2025,Las Aguilas,Las Panteras,0,0,Coliseo Polideportivo,2025-03-12 12:00:00,Finalizado
+Liga Universitaria 2025,Los Lobos,Los Osos,1,2,Cancha de Pasto Sintetico,2025-03-13 14:00:00,Finalizado
+Liga Universitaria 2025,Las Cobras,Las Hienas,4,1,Estadio Universitario,2025-03-13 16:00:00,Finalizado
+Liga Universitaria 2025,Los Tiburones,Los Leones,0,2,Estadio Universitario,2025-03-14 10:00:00,Finalizado

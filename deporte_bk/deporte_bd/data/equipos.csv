@@ -1,0 +1,11 @@
+id,correo_delegado,nombre,logo,estado
+1,juan.perez@delegado.com,Los Leones,logo_leones.png,1
+2,maria.lopez@delegado.com,Las Aguilas,logo_aguilas.png,1
+3,carlos.gomez@delegado.com,Los Tigres,logo_tigres.png,1
+4,ana.torres@delegado.com,Las Panteras,logo_panteras.png,1
+5,luis.rodriguez@delegado.com,Los Lobos,logo_lobos.png,1
+6,sofia.martinez@delegado.com,Las Cobras,logo_cobras.png,1
+7,pedro.sanchez@delegado.com,Los Osos,logo_osos.png,1
+8,lucia.diaz@delegado.com,Las Hienas,logo_hienas.png,1
+9,miguel.fernandez@delegado.com,Los Tiburones,logo_tiburones.png,1
+10,elena.ruiz@delegado.com,Las Orcas,logo_orcas.png,1

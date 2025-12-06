@@ -148,7 +148,14 @@ class Historial(models.Model):
     IDCampeonato = models.ForeignKey(Campeonato, on_delete=models.CASCADE)
     IDEquipo = models.ForeignKey(Equipo, on_delete=models.PROTECT)
     Posicion = models.IntegerField(blank=True, null=True)
-    Puntos = models.IntegerField(blank=True, null=True)
+    Puntos = models.IntegerField(default=0)
+    PJ = models.IntegerField(default=0) # Partidos Jugados
+    PG = models.IntegerField(default=0) # Partidos Ganados
+    PE = models.IntegerField(default=0) # Partidos Empatados
+    PP = models.IntegerField(default=0) # Partidos Perdidos
+    GF = models.IntegerField(default=0) # Goles a Favor
+    GC = models.IntegerField(default=0) # Goles en Contra
+    DG = models.IntegerField(default=0) # Diferencia de Goles
 
     class Meta:
         unique_together = (('IDCampeonato', 'IDEquipo'),) # Un equipo solo puede tener una entrada por campeonato
@@ -157,10 +164,12 @@ class Historial(models.Model):
 
 class Fixture(models.Model):
     # IDFixture SERIAL PRIMARY KEY
-    IDCampeonato = models.OneToOneField(Campeonato, on_delete=models.CASCADE) # Un Fixture por Campeonato
+    IDCampeonato = models.ForeignKey(Campeonato, on_delete=models.CASCADE) # Varios Fixtures (Jornadas) por Campeonato
+    Numero = models.IntegerField(default=1) # Número de Jornada
+    Fecha = models.DateField(blank=True, null=True) # Fecha de la jornada
 
     def __str__(self):
-        return f"Fixture de: {self.IDCampeonato.Nombre}"
+        return f"Jornada {self.Numero} - {self.IDCampeonato.Nombre}"
 
 class Resultado(models.Model):
     # IDResultado SERIAL PRIMARY KEY

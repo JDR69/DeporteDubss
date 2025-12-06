@@ -1,0 +1,11 @@
+Registro,Nombre,Apellido,Correo,Contrasena,Fecha_Nacimiento,Genero,Estado
+2001,Juan,Perez,juan.perez@delegado.com,12345,1980-01-01,M,1
+2002,Maria,Lopez,maria.lopez@delegado.com,12345,1982-05-15,F,1
+2003,Carlos,Gomez,carlos.gomez@delegado.com,12345,1979-11-20,M,1
+2004,Ana,Torres,ana.torres@delegado.com,12345,1985-03-10,F,1
+2005,Luis,Rodriguez,luis.rodriguez@delegado.com,12345,1981-07-25,M,1
+2006,Sofia,Martinez,sofia.martinez@delegado.com,12345,1983-09-05,F,1
+2007,Pedro,Sanchez,pedro.sanchez@delegado.com,12345,1978-12-30,M,1
+2008,Lucia,Diaz,lucia.diaz@delegado.com,12345,1984-04-12,F,1
+2009,Miguel,Fernandez,miguel.fernandez@delegado.com,12345,1980-08-18,M,1
+2010,Elena,Ruiz,elena.ruiz@delegado.com,12345,1982-02-28,F,1
