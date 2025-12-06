@@ -1,4 +1,0 @@
-Django==4.2.7
-djangorestframework==3.14.0
-django-environ==0.11.2
-psycopg[binary]==3.2.3

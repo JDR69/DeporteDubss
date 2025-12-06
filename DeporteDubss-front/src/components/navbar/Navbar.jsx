@@ -3,10 +3,18 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const Navbar = ({ isLoggedIn = false, onLogout }) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const green = "#16a34a";
   const [openDropdown, setOpenDropdown] = useState(null);
   const dropdownRefs = [useRef(), useRef(), useRef()];
+  
+  const handleLogout = () => {
+    if (onLogout) {
+      onLogout();
+    } else {
+      logout();
+    }
+  };
 
   // Cierra el dropdown si se hace click fuera
   useEffect(() => {
@@ -32,35 +40,74 @@ const Navbar = ({ isLoggedIn = false, onLogout }) => {
         <div className="flex items-center">
           <span className="text-2xl font-bold text-white">DUBSS</span>
         </div>
+        
         {/* Center: Links según rol */}
-        <div className="w-full md:w-auto flex flex-col md:flex-row justify-center items-center gap-2 md:gap-6">
-          {/* ADMIN: rol-permisos, instalaciones, campeonatos, registrar usuario */}
-          {user?.rol === "admin" && (
+        <div className="w-full md:w-auto flex flex-col md:flex-row justify-center items-center gap-2 md:gap-4 flex-wrap">
+          {user?.id && (
             <>
-              <Link to="/rol-permisos" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Rol Permisos</Link>
-              <Link to="/instalaciones" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Instalaciones</Link>
+              <Link to="/perfil" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Perfil</Link>
+              
+              {/* Links para admin (rol 1) */}
+              {(user?.rol === 1 || user?.rol === "admin") && (
+                <>
+                  <Link to="/usuarios" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Usuarios</Link>
+                  <Link to="/rol-permisos" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Roles</Link>
+                </>
+              )}
+              
+              {/* Links comunes */}
               <Link to="/campeonatos" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Campeonatos</Link>
-              <Link to="/categorias" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Categorías</Link>
-              <Link to="/deportes" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Deportes</Link>
-              <Link to={`/dashboard/${user?.id}/registrar-usuario`} className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Registrar Usuario</Link>
-            </>
-          )}
-          {/* DELEGADO: campeonatos, equipo */}
-          {user?.rol === "delegado" && (
-            <>
-              <Link to="/campeonatos" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Campeonatos</Link>
-              <Link to="/equipo" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Equipo</Link>
-              <Link to="/categorias" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Categorías</Link>
-              <Link to="/deportes" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Deportes</Link>
+              <Link to="/equipo" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Equipos</Link>
+              <Link to="/partidos" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Partidos</Link>
+              <Link to="/historial" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Posiciones</Link>
+              
+              {/* Dropdown para recursos */}
+              <div className="relative" ref={dropdownRefs[0]}>
+                <button 
+                  onClick={() => setOpenDropdown(openDropdown === 0 ? null : 0)}
+                  className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded flex items-center gap-1"
+                >
+                  Recursos ▾
+                </button>
+                {openDropdown === 0 && (
+                  <div className="absolute top-full left-0 mt-1 bg-white rounded shadow-lg py-2 z-50 min-w-[150px]">
+                    <Link to="/instalaciones" className="block px-4 py-2 text-green-700 hover:bg-green-100">Instalaciones</Link>
+                    <Link to="/categorias" className="block px-4 py-2 text-green-700 hover:bg-green-100">Categorías</Link>
+                    <Link to="/deportes" className="block px-4 py-2 text-green-700 hover:bg-green-100">Deportes</Link>
+                  </div>
+                )}
+              </div>
+              
+              {/* Dropdown para gestión de partidos */}
+              <div className="relative" ref={dropdownRefs[1]}>
+                <button 
+                  onClick={() => setOpenDropdown(openDropdown === 1 ? null : 1)}
+                  className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded flex items-center gap-1"
+                >
+                  Gestión ▾
+                </button>
+                {openDropdown === 1 && (
+                  <div className="absolute top-full left-0 mt-1 bg-white rounded shadow-lg py-2 z-50 min-w-[150px]">
+                    <Link to="/fixtures" className="block px-4 py-2 text-green-700 hover:bg-green-100">Fixtures</Link>
+                    <Link to="/resultados" className="block px-4 py-2 text-green-700 hover:bg-green-100">Resultados</Link>
+                    <Link to="/incidencias" className="block px-4 py-2 text-green-700 hover:bg-green-100">Incidencias</Link>
+                  </div>
+                )}
+              </div>
             </>
           )}
         </div>
+        
         {/* Login/Logout Button */}
         <div className="w-full md:w-auto flex justify-end mt-2 md:mt-0">
-          {isLoggedIn ? (
-              <button onClick={onLogout} className="bg-white text-green-700 font-semibold px-6 py-2 rounded-lg transition-colors hover:bg-green-100 flex items-center gap-2 cursor-pointer">Salir</button>
+          {user?.id ? (
+            <button onClick={handleLogout} className="bg-white text-green-700 font-semibold px-6 py-2 rounded-lg transition-colors hover:bg-green-100 flex items-center gap-2 cursor-pointer">
+              Salir
+            </button>
           ) : (
-            <Link to="/login" className="bg-white text-green-700 font-semibold px-6 py-2 rounded-lg transition-colors hover:bg-green-100 flex items-center gap-2 cursor-pointer">Iniciar sesión</Link>
+            <Link to="/" className="bg-white text-green-700 font-semibold px-6 py-2 rounded-lg transition-colors hover:bg-green-100 flex items-center gap-2 cursor-pointer">
+              Iniciar sesión
+            </Link>
           )}
         </div>
       </nav>

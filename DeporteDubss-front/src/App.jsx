@@ -13,6 +13,12 @@ import RegisterPage from "./pages/RegisterPage.jsx"
 import CategoriaPage from "./pages/CategoriaPage.jsx"
 import DeportePage from "./pages/DeportePage.jsx"
 import Home from "./pages/Home.jsx"
+import UsuariosPage from "./pages/UsuariosPage.jsx"
+import FixturesPage from "./pages/FixturesPage.jsx"
+import ResultadosPage from "./pages/ResultadosPage.jsx"
+import PartidosPage from "./pages/PartidosPage.jsx"
+import HistorialPage from "./pages/HistorialPage.jsx"
+import IncidenciasPage from "./pages/IncidenciasPage.jsx"
 
 function App() {
   return (
@@ -105,6 +111,54 @@ function App() {
             element={
               <ProtectedRoute>
                 <DeportePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/usuarios"
+            element={
+              <ProtectedRoute>
+                <UsuariosPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/fixtures"
+            element={
+              <ProtectedRoute>
+                <FixturesPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/resultados"
+            element={
+              <ProtectedRoute>
+                <ResultadosPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/partidos"
+            element={
+              <ProtectedRoute>
+                <PartidosPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/historial"
+            element={
+              <ProtectedRoute>
+                <HistorialPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/incidencias"
+            element={
+              <ProtectedRoute>
+                <IncidenciasPage />
               </ProtectedRoute>
             }
           />
