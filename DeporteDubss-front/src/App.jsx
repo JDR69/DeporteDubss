@@ -19,6 +19,9 @@ import ResultadosPage from "./pages/ResultadosPage.jsx"
 import PartidosPage from "./pages/PartidosPage.jsx"
 import HistorialPage from "./pages/HistorialPage.jsx"
 import IncidenciasPage from "./pages/IncidenciasPage.jsx"
+import AdminDashboard from "./pages/AdminDashboard.jsx"
+import OrganizadorDashboard from "./pages/OrganizadorDashboard.jsx"
+import DelegadoDashboard from "./pages/DelegadoDashboard.jsx"
 
 function App() {
   return (
@@ -27,6 +30,33 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/" element={<LoginPage />} />
+          
+          {/* Dashboards por rol */}
+          <Route
+            path="/dashboard/admin"
+            element={
+              <ProtectedRoute>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/organizador"
+            element={
+              <ProtectedRoute>
+                <OrganizadorDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/delegado"
+            element={
+              <ProtectedRoute>
+                <DelegadoDashboard />
+              </ProtectedRoute>
+            }
+          />
+          
           {/* Ruta protegida solo para admin: registro de usuario */}
           <Route
             path="/dashboard/:id/registrar-usuario"
@@ -44,7 +74,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-          {/* Ejemplo de otra ruta privada */}
           
           <Route
             path="/perfil"

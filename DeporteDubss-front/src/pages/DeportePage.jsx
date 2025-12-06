@@ -12,7 +12,7 @@ function DeportePage() {
 	const cargarDeportes = async () => {
 		try {
 			const res = await getDeportes();
-			setDeportes(res.data);
+			setDeportes(Array.isArray(res.data) ? res.data : []);
 		} catch (err) {
 			setMensaje('Error al cargar deportes');
 		}
@@ -25,7 +25,7 @@ function DeportePage() {
 	const handleAgregar = async () => {
 		if (!nombre.trim()) return;
 		try {
-			await createDeporte({ nombre });
+			await createDeporte({ Nombre: nombre });
 			setNombre('');
 			setMensaje('Deporte agregado');
 			cargarDeportes();
@@ -47,13 +47,13 @@ function DeportePage() {
 
 	const handleEditar = (dep) => {
 		setEditId(dep.id);
-		setEditNombre(dep.nombre);
+		setEditNombre(dep.Nombre || '');
 	};
 
 	const handleGuardar = async (id) => {
 		if (!editNombre.trim()) return;
 		try {
-			await updateDeporte(id, { nombre: editNombre });
+			await updateDeporte(id, { Nombre: editNombre });
 			setEditId(null);
 			setEditNombre('');
 			setMensaje('Actualizado');
@@ -105,7 +105,7 @@ function DeportePage() {
 													className="px-2 py-1 border border-[#34D399] rounded bg-[#A7F3D0] text-[#065F46]"
 												/>
 											) : (
-												dep.nombre
+												dep.Nombre
 											)}
 										</td>
 										<td className="px-4 py-2 flex gap-2">

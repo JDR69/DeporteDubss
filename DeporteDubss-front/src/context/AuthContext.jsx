@@ -63,8 +63,20 @@ export const AuthProvider = ({ children }) => {
       // Actualizar estado
       setUser(userData);
       
-      // Navegar al perfil o dashboard
-      navigate('/perfil');
+      // Navegar al dashboard según el rol
+      switch(userData.rol) {
+        case 1: // Admin
+          navigate('/dashboard/admin');
+          break;
+        case 2: // Organizador
+          navigate('/dashboard/organizador');
+          break;
+        case 3: // Delegado
+          navigate('/dashboard/delegado');
+          break;
+        default:
+          navigate('/perfil');
+      }
       
       return true;
     } catch (error) {

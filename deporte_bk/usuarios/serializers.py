@@ -28,11 +28,22 @@ class RolSerializer(serializers.Serializer):
 
 class UsuarioSerializer(serializers.ModelSerializer):
     # Represent IDRol as integer PK
+    IDUsuario = serializers.IntegerField(source='id', read_only=True)
     IDRol = serializers.PrimaryKeyRelatedField(queryset=Rol.objects.all())
     # Read-only nested representation of the role
     Rol = RolSerializer(source='IDRol', read_only=True)
 
     class Meta:
         model = Usuario
-        fields = ['id', 'IDRol', 'Rol', 'Nombre', 'Apellido', 'Registro', 'Correo', 'Fecha_Nacimiento', 'Genero', 'Estado']
-        read_only_fields = ['id']
+        # Include 'id' for compatibility and 'IDUsuario' for explicit naming
+        fields = ['id', 'IDUsuario', 'IDRol', 'Rol', 'Nombre', 'Apellido', 'Registro', 'Correo', 'Contrasena', 'Fecha_Nacimiento', 'Genero', 'Estado']
+        read_only_fields = ['id', 'IDUsuario']
+        # La contraseña no es requerida en actualización; solo en creación desde el endpoint de creación
+        extra_kwargs = {
+            'Contrasena': {
+                'write_only': True,
+                'required': False,
+                'allow_null': True,
+                'allow_blank': True,
+            }
+        }

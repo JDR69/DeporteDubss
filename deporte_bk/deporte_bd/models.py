@@ -50,6 +50,17 @@ class Usuario(models.Model):
     def __str__(self):
         return f"{self.Nombre} {self.Apellido}"
 
+    # Make this custom user compatible with Django/DRF permission checks
+    # DRF uses `request.user.is_authenticated` to allow access when required.
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_active(self):
+        # Mirror `Estado` where 1 means active
+        return self.Estado == 1
+
 # Tablas con herencia: Organizador y Delegado son tipos de Usuario (Relación One-to-One)
 
 class Organizador(models.Model):

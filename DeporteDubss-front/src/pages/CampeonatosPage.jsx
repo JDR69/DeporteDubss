@@ -25,8 +25,8 @@ function CampeonatosPage() {
         setLoading(true);
         Promise.all([getDeportes(), getCategorias()])
             .then(([resDeportes, resCategorias]) => {
-                setDeportes(resDeportes.data);
-                setCategorias(resCategorias.data);
+                setDeportes(Array.isArray(resDeportes.data) ? resDeportes.data : []);
+                setCategorias(Array.isArray(resCategorias.data) ? resCategorias.data : []);
                 setLoading(false);
             })
             .catch(() => {
@@ -46,7 +46,7 @@ function CampeonatosPage() {
         setLoading(true);
         try {
             // Obtener el ID del deporte seleccionado por nombre
-            const deporteObj = deportes.find(d => d.nombre === deporteNombre);
+            const deporteObj = deportes.find(d => (d.Nombre || '').trim() === deporteNombre.trim());
             if (!deporteObj) {
                 setError('Selecciona un deporte válido.');
                 setLoading(false);
@@ -106,7 +106,7 @@ function CampeonatosPage() {
                                 className="w-full px-4 py-2 border border-[#34D399] rounded-lg bg-[#A7F3D0] text-[#065F46] focus:outline-none"
                             >
                                 <option value="">Selecciona un deporte</option>
-                                {[...new Set(deportes.map(dep => dep.nombre))].map((nombre, idx) => (
+                                {[...new Set(deportes.map(dep => dep.Nombre))].filter(Boolean).map((nombre, idx) => (
                                     <option key={idx} value={nombre}>{nombre}</option>
                                 ))}
                             </select>
@@ -120,7 +120,7 @@ function CampeonatosPage() {
                             >
                                 <option value="">Selecciona una categoría</option>
                                 {categorias.map(cat => (
-                                    <option key={cat.id} value={cat.id}>{cat.nombre}</option>
+                                    <option key={cat.id} value={cat.id}>{cat.Nombre}</option>
                                 ))}
                             </select>
                         </div>

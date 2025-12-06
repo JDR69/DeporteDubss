@@ -3,18 +3,28 @@ from deporte_bd.models import Categoria, Instalacion, Deporte
 
 
 class CategoriaSerializer(serializers.ModelSerializer):
+    IDCategoria = serializers.IntegerField(source='id', read_only=True)
+    
     class Meta:
         model = Categoria
-        fields = ['id', 'Nombre']
+        # Include both id and IDCategoria for compatibility
+        fields = ['id', 'IDCategoria', 'Nombre']
+        read_only_fields = ['id', 'IDCategoria']
 
 
 class InstalacionSerializer(serializers.ModelSerializer):
+    IDInstalacion = serializers.IntegerField(source='id', read_only=True)
+    
     class Meta:
         model = Instalacion
-        fields = ['id', 'Nombre', 'Ubicacion', 'Estado']
+        fields = ['id', 'IDInstalacion', 'Nombre', 'Ubicacion', 'Estado']
+        read_only_fields = ['id', 'IDInstalacion']
 
 
 class DeporteSerializer(serializers.ModelSerializer):
+    IDDeporte = serializers.IntegerField(source='id', read_only=True)
+    
     class Meta:
         model = Deporte
-        fields = ['id', 'IDCategoria', 'Nombre']
+        fields = ['id', 'IDDeporte', 'IDCategoria', 'Nombre']
+        read_only_fields = ['id', 'IDDeporte']

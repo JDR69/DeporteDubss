@@ -12,7 +12,8 @@ function CategoriaPage() {
 	const cargarCategorias = async () => {
 		try {
 			const res = await getCategorias();
-			setCategorias(res.data);
+			// Backend devuelve campos con mayúsculas (Nombre)
+			setCategorias(Array.isArray(res.data) ? res.data : []);
 		} catch (err) {
 			setMensaje('Error al cargar categorías');
 		}
@@ -25,7 +26,7 @@ function CategoriaPage() {
 	const handleAgregar = async () => {
 		if (!nombre.trim()) return;
 		try {
-			await createCategoria({ nombre });
+			await createCategoria({ Nombre: nombre });
 			setNombre('');
 			setMensaje('Categoría agregada');
 			cargarCategorias();
@@ -47,13 +48,13 @@ function CategoriaPage() {
 
 	const handleEditar = (cat) => {
 		setEditId(cat.id);
-		setEditNombre(cat.nombre);
+		setEditNombre(cat.Nombre || '');
 	};
 
 	const handleGuardar = async (id) => {
 		if (!editNombre.trim()) return;
 		try {
-			await updateCategoria(id, { nombre: editNombre });
+			await updateCategoria(id, { Nombre: editNombre });
 			setEditId(null);
 			setEditNombre('');
 			setMensaje('Actualizado');
@@ -105,7 +106,7 @@ function CategoriaPage() {
 													className="px-2 py-1 border border-[#34D399] rounded bg-[#A7F3D0] text-[#065F46]"
 												/>
 											) : (
-												cat.nombre
+												cat.Nombre
 											)}
 										</td>
 										<td className="px-4 py-2 flex gap-2">

@@ -7,6 +7,7 @@ const Navbar = ({ isLoggedIn = false, onLogout }) => {
   const green = "#16a34a";
   const [openDropdown, setOpenDropdown] = useState(null);
   const dropdownRefs = [useRef(), useRef(), useRef()];
+  const [menuOpen, setMenuOpen] = useState(false);
   
   const handleLogout = () => {
     if (onLogout) {
@@ -34,15 +35,22 @@ const Navbar = ({ isLoggedIn = false, onLogout }) => {
   }, [openDropdown]);
 
   return (
-    <div className="w-full" style={{ background: green }}>
-      <nav className="w-full max-w-4xl mx-auto rounded-lg shadow-lg flex flex-col md:flex-row items-center justify-between px-2 md:px-4 py-2" style={{ background: green }}>
+    <div className="w-full sticky top-0 z-50" style={{ background: green }}>
+      <nav className="w-full max-w-6xl mx-auto rounded-lg shadow-lg flex flex-col md:flex-row items-center justify-between px-3 md:px-6 py-2" style={{ background: green }}>
         {/* Logo */}
         <div className="flex items-center">
           <span className="text-2xl font-bold text-white">DUBSS</span>
+          <button
+            className="md:hidden ml-3 text-white focus:outline-none"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Toggle Menu"
+          >
+            ☰
+          </button>
         </div>
         
         {/* Center: Links según rol */}
-        <div className="w-full md:w-auto flex flex-col md:flex-row justify-center items-center gap-2 md:gap-4 flex-wrap">
+        <div className={`w-full md:w-auto ${menuOpen ? 'flex' : 'hidden'} md:flex flex-col md:flex-row justify-center items-center gap-2 md:gap-4 flex-wrap`}>
           {user?.id && (
             <>
               <Link to="/perfil" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Perfil</Link>

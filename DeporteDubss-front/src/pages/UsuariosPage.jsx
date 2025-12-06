@@ -56,6 +56,10 @@ function UsuariosPage() {
         setLoading(true);
         try {
             const dataToSend = { ...formData };
+            // Asegurar que IDRol sea entero (DRF espera PK integer)
+            if (dataToSend.IDRol !== '' && typeof dataToSend.IDRol !== 'number') {
+                dataToSend.IDRol = parseInt(dataToSend.IDRol);
+            }
             // Si estamos editando y no se cambió la contraseña, no la enviamos
             if (editingId && !dataToSend.Contrasena) {
                 delete dataToSend.Contrasena;
@@ -182,18 +186,18 @@ function UsuariosPage() {
                                     required
                                 />
                             </div>
-                            <div>
-                                <label className="block text-[#065F46] font-semibold mb-1">
-                                    Contraseña {editingId ? '(dejar vacío para no cambiar)' : '*'}
-                                </label>
-                                <input
-                                    type="password"
-                                    value={formData.Contrasena}
-                                    onChange={(e) => setFormData({...formData, Contrasena: e.target.value})}
-                                    className="w-full px-4 py-2 border border-[#34D399] rounded-lg bg-[#F3F4F6] text-[#065F46] focus:outline-none"
-                                    required={!editingId}
-                                />
-                            </div>
+                            {!editingId && (
+                                <div>
+                                    <label className="block text-[#065F46] font-semibold mb-1">Contraseña *</label>
+                                    <input
+                                        type="password"
+                                        value={formData.Contrasena}
+                                        onChange={(e) => setFormData({...formData, Contrasena: e.target.value})}
+                                        className="w-full px-4 py-2 border border-[#34D399] rounded-lg bg-[#F3F4F6] text-[#065F46] focus:outline-none"
+                                        required
+                                    />
+                                </div>
+                            )}
                             <div>
                                 <label className="block text-[#065F46] font-semibold mb-1">Rol *</label>
                                 <select
