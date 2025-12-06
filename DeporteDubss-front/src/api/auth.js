@@ -19,10 +19,12 @@ export const deleteEquipo = (id) => axiosInstance.delete(`/api/adm_deportiva/equ
 
 // Campeonatos
 export const getCampeonatos = () => axiosInstance.get('/api/adm_deportiva/campeonatos/');
+export const getCampeonatoDetalle = (id) => axiosInstance.get(`/api/adm_deportiva/campeonatos/${id}/detalle/`);
 export const getCampeonato = (id) => axiosInstance.get(`/api/adm_deportiva/campeonatos/${id}/`);
 export const createCampeonato = (data) => axiosInstance.post('/api/adm_deportiva/campeonatos/', data);
 export const updateCampeonato = (id, data) => axiosInstance.put(`/api/adm_deportiva/campeonatos/${id}/`, data);
 export const deleteCampeonato = (id) => axiosInstance.delete(`/api/adm_deportiva/campeonatos/${id}/`);
+export const inscribirEquipo = (campeonatoId, equipoId) => axiosInstance.post(`/api/adm_deportiva/campeonatos/${campeonatoId}/inscribir/`, { equipo_id: equipoId });
 
 
 // Deportes

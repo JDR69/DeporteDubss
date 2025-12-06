@@ -60,11 +60,13 @@ const Navbar = ({ isLoggedIn = false, onLogout }) => {
                 <>
                   <Link to="/usuarios" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Usuarios</Link>
                   <Link to="/rol-permisos" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Roles</Link>
+                  <Link to="/bitacora" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">📋 Bitácora</Link>
                 </>
               )}
               
               {/* Links comunes */}
               <Link to="/campeonatos" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Campeonatos</Link>
+              <Link to="/calendario" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">📅 Calendario</Link>
               <Link to="/equipo" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Equipos</Link>
               <Link to="/partidos" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Partidos</Link>
               <Link to="/historial" className="text-white font-medium px-2 py-1 hover:bg-green-700 rounded">Posiciones</Link>

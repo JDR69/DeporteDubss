@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { 
     getPartidos, getFixtures, getInstalaciones, getEquipos, getResultados,
-    createPartido, updatePartido, deletePartido 
+    createPartido, updatePartido, deletePartido,
+    createResultado, updateResultado
 } from '../api/auth';
 import Loading from '../components/loading';
 
@@ -22,7 +23,9 @@ function PartidosPage() {
         IDInstalacion: '',
         IDResultado: '',
         IDEquipo_Local: '',
-        IDEquipo_Visitante: ''
+        IDEquipo_Visitante: '',
+        Goles_Local: '',
+        Goles_Visitante: ''
     });
 
     useEffect(() => {
@@ -68,11 +71,30 @@ function PartidosPage() {
 
         setLoading(true);
         try {
+            let resultadoId = formData.IDResultado || null;
+
+            const hasGoles = formData.Goles_Local !== '' && formData.Goles_Visitante !== '';
+            if (hasGoles) {
+                const payload = {
+                    Goles_Local: parseInt(formData.Goles_Local, 10),
+                    Goles_Visitante: parseInt(formData.Goles_Visitante, 10)
+                };
+                if (resultadoId) {
+                    await updateResultado(resultadoId, payload);
+                } else {
+                    const res = await createResultado(payload);
+                    resultadoId = res.data.id;
+                }
+            }
+
             const dataToSend = {
-                ...formData,
-                IDResultado: formData.IDResultado || null
+                IDFixture: formData.IDFixture,
+                IDInstalacion: formData.IDInstalacion,
+                IDEquipo_Local: formData.IDEquipo_Local,
+                IDEquipo_Visitante: formData.IDEquipo_Visitante,
+                IDResultado: resultadoId
             };
-            
+
             if (editingId) {
                 await updatePartido(editingId, dataToSend);
                 setMensaje('Partido actualizado exitosamente');
@@ -122,7 +144,9 @@ function PartidosPage() {
             IDInstalacion: '',
             IDResultado: '',
             IDEquipo_Local: '',
-            IDEquipo_Visitante: ''
+            IDEquipo_Visitante: '',
+            Goles_Local: '',
+            Goles_Visitante: ''
         });
         setEditingId(null);
         setShowForm(false);
@@ -238,20 +262,27 @@ function PartidosPage() {
                                     ))}
                                 </select>
                             </div>
-                            <div className="md:col-span-2">
-                                <label className="block text-[#065F46] font-semibold mb-1">Resultado (opcional)</label>
-                                <select
-                                    value={formData.IDResultado}
-                                    onChange={(e) => setFormData({...formData, IDResultado: e.target.value})}
+                            <div>
+                                <label className="block text-[#065F46] font-semibold mb-1">Goles Local</label>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    value={formData.Goles_Local}
+                                    onChange={(e) => setFormData({...formData, Goles_Local: e.target.value})}
+                                    placeholder="0"
                                     className="w-full px-4 py-2 border border-[#34D399] rounded-lg bg-[#A7F3D0] text-[#065F46] focus:outline-none"
-                                >
-                                    <option value="">Sin resultado asignado</option>
-                                    {resultados.map(res => (
-                                        <option key={res.id} value={res.id}>
-                                            Resultado #{res.id}: {res.Goles_Local} - {res.Goles_Visitante}
-                                        </option>
-                                    ))}
-                                </select>
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-[#065F46] font-semibold mb-1">Goles Visitante</label>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    value={formData.Goles_Visitante}
+                                    onChange={(e) => setFormData({...formData, Goles_Visitante: e.target.value})}
+                                    placeholder="0"
+                                    className="w-full px-4 py-2 border border-[#34D399] rounded-lg bg-[#A7F3D0] text-[#065F46] focus:outline-none"
+                                />
                             </div>
                             <div className="md:col-span-2 flex gap-4">
                                 <button

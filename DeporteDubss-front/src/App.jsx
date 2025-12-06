@@ -22,6 +22,8 @@ import IncidenciasPage from "./pages/IncidenciasPage.jsx"
 import AdminDashboard from "./pages/AdminDashboard.jsx"
 import OrganizadorDashboard from "./pages/OrganizadorDashboard.jsx"
 import DelegadoDashboard from "./pages/DelegadoDashboard.jsx"
+import CalendarioPage from "./pages/CalendarioPage.jsx"
+import BitacoraPage from "./pages/BitacoraPage.jsx"
 
 function App() {
   return (
@@ -109,6 +111,15 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          <Route
+            path="/calendario"
+            element={
+              <ProtectedRoute>
+                <CalendarioPage />
+              </ProtectedRoute>
+            }
+          />
           
          
           <Route
@@ -188,6 +199,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <IncidenciasPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/bitacora"
+            element={
+              <ProtectedRoute>
+                <BitacoraPage />
               </ProtectedRoute>
             }
           />

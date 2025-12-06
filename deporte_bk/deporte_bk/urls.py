@@ -39,4 +39,6 @@ urlpatterns = [
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     # Roles list
     path('api/roles/', RolesList.as_view(), name='roles-list'),
+    # Reportes / Admin dashboard
+    path('api/reportes/', include('reportes.urls')),
 ]

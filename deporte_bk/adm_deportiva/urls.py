@@ -1,7 +1,8 @@
 from django.urls import path
 from .views import (
     IncidenciaViewSet, CampeonatoViewSet, FixtureViewSet,
-    ResultadoViewSet, PartidoViewSet, HistorialViewSet, EquipoViewSet
+    ResultadoViewSet, PartidoViewSet, HistorialViewSet, EquipoViewSet,
+    CampeonatoDetalleView, InscribirEquipoView
 )
 
 # Explicit URL patterns to avoid multiple DRF router registrations which
@@ -39,6 +40,8 @@ urlpatterns = [
     # Gestión de Campeonatos
     path('campeonatos/', campeonato_list, name='campeonato-list'),
     path('campeonatos/<int:pk>/', campeonato_detail, name='campeonato-detail'),
+    path('campeonatos/<int:pk>/detalle/', CampeonatoDetalleView.as_view(), name='campeonato-detalle'),
+    path('campeonatos/<int:pk>/inscribir/', InscribirEquipoView.as_view(), name='campeonato-inscribir'),
     
     # Fixtures
     path('fixtures/', fixture_list, name='fixture-list'),

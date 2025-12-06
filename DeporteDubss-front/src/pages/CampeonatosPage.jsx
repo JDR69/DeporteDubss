@@ -1,16 +1,22 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { getDeportes, getCategorias, createCampeonato, getCampeonatos, deleteCampeonato } from '../api/auth';
+import { getDeportes, getCategorias, createCampeonato, getCampeonatos, deleteCampeonato, getCampeonatoDetalle } from '../api/auth';
 import Loading from '../components/loading';
 import { uploadImageToCloudinary } from '../services/cloudinary';
 import { ROLES } from '../utils/permissions';
+import ChampionshipCard from '../components/championships/ChampionshipCard';
+import ChampionshipDetail from '../components/championships/ChampionshipDetail';
+import EnrollTeamModal from '../components/championships/EnrollTeamModal';
 
 function CampeonatosPage() {
     const { user } = useAuth ? useAuth() : { user: null };
     const [deportes, setDeportes] = useState([]);
     const [categorias, setCategorias] = useState([]);
     const [campeonatos, setCampeonatos] = useState([]);
+    const [detallePorId, setDetallePorId] = useState({});
+    const [showEnrollModal, setShowEnrollModal] = useState(false);
+    const [selectedCampeonatoId, setSelectedCampeonatoId] = useState(null);
     
     // Form states
     const [deporteNombre, setDeporteNombre] = useState('');
@@ -54,6 +60,21 @@ function CampeonatosPage() {
             setError('Error al cargar los datos.');
         }
         setLoading(false);
+    };
+
+    const toggleDetalle = async (id) => {
+        // Alternar expansión, y si no existe detalle, cargarlo
+        if (detallePorId[id]) {
+            setDetallePorId(prev => ({ ...prev, [id]: { ...prev[id], _expanded: !prev[id]._expanded } }));
+            return;
+        }
+        try {
+            const { data } = await getCampeonatoDetalle(id);
+            setDetallePorId(prev => ({ ...prev, [id]: { ...data, _expanded: true } }));
+        } catch (err) {
+            console.error('Error obteniendo detalle:', err);
+            setError('No se pudo cargar el detalle del campeonato.');
+        }
     };
 
     const handleRegistrar = async () => {
@@ -128,36 +149,63 @@ function CampeonatosPage() {
         setLoading(false);
     };
 
+    const handleOpenEnrollModal = (campeonatoId) => {
+        setSelectedCampeonatoId(campeonatoId);
+        setShowEnrollModal(true);
+    };
+
+    const handleEnrollSuccess = async () => {
+        setMensaje('Equipo inscrito exitosamente');
+        // Recargar detalles del campeonato
+        if (selectedCampeonatoId) {
+            try {
+                const { data } = await getCampeonatoDetalle(selectedCampeonatoId);
+                setDetallePorId(prev => ({ ...prev, [selectedCampeonatoId]: { ...data, _expanded: true } }));
+            } catch (err) {
+                console.error('Error reloading details:', err);
+            }
+        }
+        setTimeout(() => setMensaje(''), 3000);
+    };
+
     return (
-        <div className="min-h-screen bg-white py-8 px-4">
+        <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 py-8 px-4">
             <Loading show={loading} message={loading ? 'Procesando...' : 'Cargando...'} />
-            <div className="max-w-4xl mx-auto">
-                <h1 className="text-3xl font-bold text-[#065F46] mb-6 text-center">Gestión de Campeonatos</h1>
+            <div className="max-w-6xl mx-auto">
+                <div className="text-center mb-8">
+                    <h1 className="text-4xl font-bold text-emerald-900 mb-2">Gestión de Campeonatos</h1>
+                    <p className="text-emerald-700">Crea y administra campeonatos deportivos</p>
+                </div>
                 
                 {/* Formulario de Creación */}
-                <div className="bg-white rounded-xl shadow p-8 border border-[#34D399] mb-8">
-                    <h2 className="text-xl font-bold text-[#065F46] mb-4">Crear Nuevo Campeonato</h2>
+                <div className="bg-white rounded-2xl shadow-lg p-8 border-2 border-emerald-200 mb-8 hover:shadow-xl transition-shadow">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-lg flex items-center justify-center">
+                            <span className="text-2xl">🏆</span>
+                        </div>
+                        <h2 className="text-2xl font-bold text-emerald-900">Crear Nuevo Campeonato</h2>
+                    </div>
                     <form className="flex flex-col gap-6" onSubmit={e => e.preventDefault()}>
-                        <div className="flex gap-4 flex-wrap">
-                            <div className="flex-1 min-w-[200px]">
-                                <label className="block text-[#065F46] font-semibold mb-1">Deporte</label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-emerald-800 font-semibold mb-2 text-sm">Deporte</label>
                                 <input 
                                     list="deportes-list" 
                                     value={deporteNombre} 
                                     onChange={(e) => setDeporteNombre(e.target.value)} 
-                                    className="w-full px-4 py-2 border border-[#34D399] rounded-lg bg-[#A7F3D0] text-[#065F46] placeholder-[#065F46]/50 focus:outline-none focus:ring-2 focus:ring-[#34D399]"
+                                    className="w-full px-4 py-3 border-2 border-emerald-200 rounded-xl bg-emerald-50 text-emerald-900 placeholder-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition"
                                     placeholder="Escribe o selecciona un deporte"
                                 />
                                 <datalist id="deportes-list">
                                     {deportes.map(d => <option key={d.id} value={d.Nombre} />)}
                                 </datalist>
                             </div>
-                            <div className="flex-1 min-w-[200px]">
-                                <label className="block text-[#065F46] font-semibold mb-1">Categoría</label>
+                            <div>
+                                <label className="block text-emerald-800 font-semibold mb-2 text-sm">Categoría</label>
                                 <select 
                                     value={categoriaId} 
                                     onChange={(e) => setCategoriaId(e.target.value)} 
-                                    className="w-full px-4 py-2 border border-[#34D399] rounded-lg bg-[#A7F3D0] text-[#065F46] focus:outline-none focus:ring-2 focus:ring-[#34D399]"
+                                    className="w-full px-4 py-3 border-2 border-emerald-200 rounded-xl bg-emerald-50 text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition"
                                 >
                                     <option value="">Selecciona una categoría</option>
                                     {categorias.map(c => <option key={c.id} value={c.id}>{c.Nombre}</option>)}
@@ -165,110 +213,94 @@ function CampeonatosPage() {
                             </div>
                         </div>
                         <div>
-                            <label className="block text-[#065F46] font-semibold mb-1">Nombre del Campeonato</label>
+                            <label className="block text-emerald-800 font-semibold mb-2 text-sm">Nombre del Campeonato</label>
                             <input 
                                 type="text" 
                                 value={nombre} 
                                 onChange={(e) => setNombre(e.target.value)} 
-                                className="w-full px-4 py-2 border border-[#34D399] rounded-lg bg-[#F3F4F6] text-[#065F46] placeholder-[#065F46]/50 focus:outline-none focus:ring-2 focus:ring-[#34D399]"
+                                className="w-full px-4 py-3 border-2 border-emerald-200 rounded-xl bg-white text-emerald-900 placeholder-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition"
                                 placeholder="Ej: Liga Universitaria 2024"
                             />
                         </div>
-                        <div className="flex gap-4 flex-wrap">
-                            <div className="flex-1 min-w-[200px]">
-                                <label className="block text-[#065F46] font-semibold mb-1">Fecha Inicio</label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-emerald-800 font-semibold mb-2 text-sm">Fecha Inicio</label>
                                 <input 
                                     type="date" 
                                     value={fechaInicio} 
                                     onChange={(e) => setFechaInicio(e.target.value)} 
-                                    className="w-full px-4 py-2 border border-[#34D399] rounded-lg bg-[#A7F3D0] text-[#065F46] focus:outline-none focus:ring-2 focus:ring-[#34D399]"
+                                    className="w-full px-4 py-3 border-2 border-emerald-200 rounded-xl bg-emerald-50 text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition"
                                 />
                             </div>
-                            <div className="flex-1 min-w-[200px]">
-                                <label className="block text-[#065F46] font-semibold mb-1">Fecha Fin</label>
+                            <div>
+                                <label className="block text-emerald-800 font-semibold mb-2 text-sm">Fecha Fin</label>
                                 <input 
                                     type="date" 
                                     value={fechaFin} 
                                     onChange={(e) => setFechaFin(e.target.value)} 
-                                    className="w-full px-4 py-2 border border-[#34D399] rounded-lg bg-[#A7F3D0] text-[#065F46] focus:outline-none focus:ring-2 focus:ring-[#34D399]"
+                                    className="w-full px-4 py-3 border-2 border-emerald-200 rounded-xl bg-emerald-50 text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition"
                                 />
                             </div>
                         </div>
                         <div>
-                            <label className="block text-[#065F46] font-semibold mb-1">Logo del Campeonato</label>
+                            <label className="block text-emerald-800 font-semibold mb-2 text-sm">Logo del Campeonato</label>
                             <input 
                                 type="file" 
                                 accept="image/*" 
                                 onChange={(e) => setLogoFile(e.target.files[0])} 
-                                className="w-full px-4 py-2 border border-[#34D399] rounded-lg bg-[#F3F4F6] text-[#065F46] focus:outline-none focus:ring-2 focus:ring-[#34D399]"
+                                className="w-full px-4 py-3 border-2 border-emerald-200 rounded-xl bg-white text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-emerald-100 file:text-emerald-700 file:font-semibold hover:file:bg-emerald-200"
                             />
                         </div>
-                        {mensaje && <p className="text-green-600 font-semibold text-center">{mensaje}</p>}
-                        {error && <p className="text-red-500 font-semibold text-center">{error}</p>}
+                        {mensaje && <div className="p-4 bg-green-50 border-l-4 border-green-500 rounded-lg"><p className="text-green-700 font-semibold">{mensaje}</p></div>}
+                        {error && <div className="p-4 bg-red-50 border-l-4 border-red-500 rounded-lg"><p className="text-red-700 font-semibold">{error}</p></div>}
                         <button 
                             onClick={handleRegistrar} 
-                            className="w-full py-3 bg-[#34D399] text-white font-bold rounded-lg hover:bg-[#065F46] transition duration-300 shadow-md"
+                            className="w-full py-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold rounded-xl hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                         >
-                            Registrar Campeonato
+                            ✨ Registrar Campeonato
                         </button>
                     </form>
                 </div>
 
-                {/* Tabla de Campeonatos */}
-                <div className="bg-white rounded-xl shadow-lg p-6 border border-[#34D399]">
-                    <h2 className="text-2xl font-bold text-[#065F46] mb-4">Lista de Campeonatos</h2>
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead className="bg-[#A7F3D0]">
-                                <tr>
-                                    <th className="px-4 py-2 text-left text-[#065F46] font-bold">Logo</th>
-                                    <th className="px-4 py-2 text-left text-[#065F46] font-bold">Nombre</th>
-                                    <th className="px-4 py-2 text-left text-[#065F46] font-bold">Deporte</th>
-                                    <th className="px-4 py-2 text-left text-[#065F46] font-bold">Fechas</th>
-                                    <th className="px-4 py-2 text-left text-[#065F46] font-bold">Estado</th>
-                                    {isAdmin && <th className="px-4 py-2 text-left text-[#065F46] font-bold">Acciones</th>}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {campeonatos.map((camp, index) => (
-                                    <tr key={camp.id} className={index % 2 === 0 ? 'bg-white' : 'bg-[#F3F4F6]'}>
-                                        <td className="px-4 py-2">
-                                            {camp.Logo ? (
-                                                <img src={camp.Logo} alt={camp.Nombre} className="w-10 h-10 object-cover rounded-full" />
-                                            ) : (
-                                                <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 text-xs">N/A</div>
-                                            )}
-                                        </td>
-                                        <td className="px-4 py-2 text-[#065F46] font-medium">{camp.Nombre}</td>
-                                        <td className="px-4 py-2 text-[#065F46]">{camp.IDDeporte?.Nombre || camp.IDDeporte}</td>
-                                        <td className="px-4 py-2 text-[#065F46] text-sm">
-                                            {camp.Fecha_Inicio} - {camp.Fecha_Fin}
-                                        </td>
-                                        <td className="px-4 py-2 text-[#065F46]">
-                                            <span className={`px-2 py-1 rounded text-xs ${camp.Estado === 'En Curso' ? 'bg-green-200 text-green-800' : camp.Estado === 'Finalizado' ? 'bg-red-200 text-red-800' : 'bg-yellow-200 text-yellow-800'}`}>
-                                                {camp.Estado}
-                                            </span>
-                                        </td>
-                                        {isAdmin && (
-                                            <td className="px-4 py-2">
-                                                <button
-                                                    onClick={() => handleDelete(camp.id)}
-                                                    className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-700 transition text-sm"
-                                                >
-                                                    Eliminar
-                                                </button>
-                                            </td>
-                                        )}
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                        {campeonatos.length === 0 && (
-                            <p className="text-center text-gray-500 py-4">No hay campeonatos registrados</p>
-                        )}
+                {/* Lista de Campeonatos */}
+                <div className="space-y-4">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-lg flex items-center justify-center">
+                            <span className="text-2xl">📋</span>
+                        </div>
+                        <h2 className="text-2xl font-bold text-emerald-900">Lista de Campeonatos</h2>
                     </div>
+                    {campeonatos.length === 0 && (
+                      <p className="text-center text-gray-500 py-4">No hay campeonatos registrados</p>
+                    )}
+                    {campeonatos.map(camp => (
+                      <div key={camp.id}>
+                        <ChampionshipCard 
+                          camp={camp} 
+                          isAdmin={isAdmin}
+                          onToggleDetail={toggleDetalle}
+                          onDelete={handleDelete}
+                        />
+                        {detallePorId[camp.id]?.['_expanded'] && (
+                          <ChampionshipDetail 
+                            detalle={detallePorId[camp.id]} 
+                            onInscribirEquipo={isAdmin ? () => handleOpenEnrollModal(camp.id) : null}
+                          />
+                        )}
+                      </div>
+                    ))}
                 </div>
             </div>
+
+            {/* Modal de Inscripción */}
+            {showEnrollModal && selectedCampeonatoId && (
+                <EnrollTeamModal
+                    campeonatoId={selectedCampeonatoId}
+                    equiposInscritos={detallePorId[selectedCampeonatoId]?.Equipos || []}
+                    onClose={() => setShowEnrollModal(false)}
+                    onSuccess={handleEnrollSuccess}
+                />
+            )}
         </div>
     );
 }

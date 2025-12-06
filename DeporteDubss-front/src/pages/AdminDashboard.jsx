@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import StatCard from '../components/StatCard';
 import Loading from '../components/loading';
-import { getCampeonatos, getEquipos, getPartidos, getUsuarios, getIncidencias } from '../api/auth';
+import { getAdminSummary } from '../api/admin';
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -26,44 +26,32 @@ const AdminDashboard = () => {
   const loadDashboardData = async () => {
     try {
       setLoading(true);
-      const [usuarios, campeonatos, equipos, partidos, incidencias] = await Promise.all([
-        getUsuarios(),
-        getCampeonatos(),
-        getEquipos(),
-        getPartidos(),
-        getIncidencias()
-      ]);
+      const summary = await getAdminSummary();
 
       setStats({
-        totalUsers: usuarios.length,
-        totalChampionships: campeonatos.length,
-        activeChampionships: campeonatos.filter(c => c.Estado === 'En Curso').length,
-        totalTeams: equipos.length,
-        totalMatches: partidos.length,
-        pendingMatches: partidos.filter(p => !p.IDResultado).length,
-        recentIncidents: incidencias.filter(i => {
-          const incidentDate = new Date(i.Fecha);
-          const weekAgo = new Date();
-          weekAgo.setDate(weekAgo.getDate() - 7);
-          return incidentDate > weekAgo;
-        }).length
+        totalUsers: summary.usuarios?.total || 0,
+        totalChampionships: summary.campeonatos || 0,
+        activeChampionships: summary.campeonatos_activos || summary.campeonatos || 0,
+        totalTeams: summary.equipos || 0,
+        totalMatches: summary.partidos || 0,
+        pendingMatches: summary.partidos_pendientes || 0,
+        recentIncidents: summary.incidencias || 0
       });
 
-      // Actividad reciente
       const activities = [
-        ...campeonatos.slice(0, 3).map(c => ({
+        ...(summary.recientes?.campeonatos || []).map(c => ({
           type: 'championship',
-          title: c.Nombre,
-          subtitle: `Estado: ${c.Estado}`,
-          time: c.Fecha_Inicio
+          title: c.nombre || `Campeonato #${c.id}`,
+          subtitle: c.estado ? `Estado: ${c.estado}` : '',
+          time: c.fecha_inicio || new Date().toISOString()
         })),
-        ...incidencias.slice(-5).map(i => ({
+        ...(summary.recientes?.incidencias || []).map(i => ({
           type: 'incident',
           title: 'Nueva incidencia',
-          subtitle: i.Descripcion.substring(0, 50) + '...',
-          time: i.Fecha
+          subtitle: (i.descripcion || '').substring(0, 50) + '...',
+          time: i.fecha || new Date().toISOString()
         }))
-      ].sort((a, b) => new Date(b.time) - new Date(a.time)).slice(0, 6);
+      ].slice(0, 6);
 
       setRecentActivity(activities);
     } catch (error) {
@@ -144,6 +132,13 @@ const AdminDashboard = () => {
                 <div className="font-semibold text-purple-700">Ver Equipos</div>
               </Link>
               <Link
+                to="/calendario"
+                className="p-4 bg-blue-50 border-2 border-blue-200 rounded-lg hover:bg-blue-100 transition-colors text-center"
+              >
+                <div className="text-3xl mb-2">📆</div>
+                <div className="font-semibold text-blue-700">Ver Calendario</div>
+              </Link>
+              <Link
                 to="/fixtures"
                 className="p-4 bg-yellow-50 border-2 border-yellow-200 rounded-lg hover:bg-yellow-100 transition-colors text-center"
               >
@@ -163,6 +158,13 @@ const AdminDashboard = () => {
               >
                 <div className="text-3xl mb-2">🔐</div>
                 <div className="font-semibold text-indigo-700">Roles y Permisos</div>
+              </Link>
+              <Link
+                to="/bitacora"
+                className="p-4 bg-slate-50 border-2 border-slate-200 rounded-lg hover:bg-slate-100 transition-colors text-center"
+              >
+                <div className="text-3xl mb-2">📋</div>
+                <div className="font-semibold text-slate-700">Ver Bitácora</div>
               </Link>
             </div>
           </div>
