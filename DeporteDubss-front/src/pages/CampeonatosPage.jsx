@@ -173,7 +173,7 @@ function CampeonatosPage() {
                         className="px-4 py-2 bg-[#34D399] text-white rounded-lg font-semibold hover:bg-[#065F46] transition"
                     >Registrar campeonato</button>
                 </form>
-                <div className="mt-10 text-center min-h-[40px]">
+                <div className="mt-10 text-center min-h-10">
                     {mensaje && <p className="text-green-700 font-semibold">{mensaje}</p>}
                     {error && <p className="text-red-600 font-semibold">{error}</p>}
                 </div>
