@@ -55,7 +55,7 @@ const Navbar = ({ isLoggedIn = false, onLogout }) => {
               Salir
             </button>
           ) : (
-            <Link to="/" className="bg-white text-green-700 font-semibold px-6 py-2 rounded-lg transition-colors hover:bg-green-100 flex items-center gap-2 cursor-pointer">
+            <Link to="/login" className="bg-white text-green-700 font-semibold px-6 py-2 rounded-lg transition-colors hover:bg-green-100 flex items-center gap-2 cursor-pointer">
               Iniciar sesión
             </Link>
           )}

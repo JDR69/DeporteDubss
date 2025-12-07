@@ -35,7 +35,8 @@ function App() {
           <Sidebar />
           <div className="flex-1">
             <Routes>
-              <Route path="/" element={<LoginPage />} />
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<LoginPage />} />
           
           {/* Dashboards por rol */}
           <Route
@@ -131,14 +132,6 @@ function App() {
             element={
               <ProtectedRoute>
                 <RolPermisos />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/home"
-            element={
-              <ProtectedRoute>
-                <Home />
               </ProtectedRoute>
             }
           />

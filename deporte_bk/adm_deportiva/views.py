@@ -1,6 +1,7 @@
 from rest_framework import viewsets, permissions, filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from deporte_bd.models import (
     Incidencia, Campeonato, Fixture, Resultado, 
     Partido, Historial, Equipo
@@ -11,11 +12,22 @@ from .serializers import (
 )
 
 
+class IsAuthenticatedOrReadOnly(permissions.BasePermission):
+    """
+    Permite acceso de solo lectura (GET) a usuarios no autenticados,
+    pero requiere autenticación para otras operaciones (POST, PUT, DELETE)
+    """
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return request.user and request.user.is_authenticated
+
+
 class CampeonatoViewSet(viewsets.ModelViewSet):
     """CRUD endpoints for Campeonato (championship management)"""
     queryset = Campeonato.objects.select_related('IDUsuario', 'IDDeporte').all().order_by('-Fecha_Inicio')
     serializer_class = CampeonatoSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['Nombre', 'Estado']
 
@@ -24,14 +36,14 @@ class FixtureViewSet(viewsets.ModelViewSet):
     """CRUD endpoints for Fixture"""
     queryset = Fixture.objects.select_related('IDCampeonato').all()
     serializer_class = FixtureSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 
 class ResultadoViewSet(viewsets.ModelViewSet):
     """CRUD endpoints for Resultado (match results)"""
     queryset = Resultado.objects.all()
     serializer_class = ResultadoSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 
 class PartidoViewSet(viewsets.ModelViewSet):
@@ -41,23 +53,23 @@ class PartidoViewSet(viewsets.ModelViewSet):
         'IDEquipo_Local', 'IDEquipo_Visitante'
     ).all()
     serializer_class = PartidoSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['IDEquipo_Local__Nombre', 'IDEquipo_Visitante__Nombre']
 
 
 class HistorialViewSet(viewsets.ModelViewSet):
     """CRUD endpoints for Historial (championship standings)"""
-    queryset = Historial.objects.select_related('IDCampeonato', 'IDEquipo').all().order_by('IDCampeonato', 'Posicion')
+    queryset = Historial.objects.select_related('IDCampeonato', 'IDEquipo').all().order_by('IDCampeonato', '-Puntos', '-DG')
     serializer_class = HistorialSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 
 class EquipoViewSet(viewsets.ModelViewSet):
     """CRUD endpoints for Equipo (team registration)"""
     queryset = Equipo.objects.select_related('IDUsuario').all()
     serializer_class = EquipoSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
     search_fields = ['Nombre']
 

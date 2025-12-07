@@ -1,136 +1,141 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { getCampeonatos, getDeportes, getHistoriales, getEquipos } from '../api/auth'
 
 const Home = () => {
+    const navigate = useNavigate();
     const [selectedCategory, setSelectedCategory] = useState('todas');
     const [currentSlide, setCurrentSlide] = useState(0);
+    const [campeonatos, setCampeonatos] = useState([]);
+    const [deportes, setDeportes] = useState([]);
+    const [historiales, setHistoriales] = useState([]);
+    const [equipos, setEquipos] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [campeonatoSeleccionado, setCampeonatoSeleccionado] = useState(null);
 
-    // Datos de ejemplo para el carrusel
-    const featuredActivities = [
-        {
-            id: 1,
-            title: "Torneo de Fútbol Universitario 2024",
-            image: "https://tse1.mm.bing.net/th/id/OIP.V9sOj0mNN5AEU0o9wwBr2AHaKe?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3",
-            date: "25 Oct 2024",
-            status: "En curso",
-            description: "Gran torneo interuniversitario con la participación de 16 equipos de diferentes facultades.",
-            participants: 320
-        },
-        {
-            id: 2,
-            title: "Campeonato de Baloncesto",
-            image: "https://tse1.mm.bing.net/th/id/OIP.V9sOj0mNN5AEU0o9wwBr2AHaKe?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3",
-            date: "28 Oct 2024",
-            status: "Próximamente",
-            description: "Emocionante competencia de baloncesto con equipos masculinos y femeninos.",
-            participants: 180
-        },
-        {
-            id: 3,
-            title: "Maratón Universitaria UAGRM",
-            image: "https://tse1.mm.bing.net/th/id/OIP.V9sOj0mNN5AEU0o9wwBr2AHaKe?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3",
-            date: "30 Oct 2024",
-            status: "Inscripciones abiertas",
-            description: "Carrera de 10K por el campus universitario con premios para los primeros lugares.",
-            participants: 250
+    useEffect(() => {
+        cargarDatos();
+    }, []);
+
+    const cargarDatos = async () => {
+        setLoading(true);
+        try {
+            const [campeonatosRes, deportesRes, historialesRes, equiposRes] = await Promise.all([
+                getCampeonatos(),
+                getDeportes(),
+                getHistoriales(),
+                getEquipos()
+            ]);
+            
+            const campsData = Array.isArray(campeonatosRes.data) ? campeonatosRes.data : [];
+            const depsData = Array.isArray(deportesRes.data) ? deportesRes.data : [];
+            const histData = Array.isArray(historialesRes.data) ? historialesRes.data : [];
+            const equiposData = Array.isArray(equiposRes.data) ? equiposRes.data : [];
+            
+            setCampeonatos(campsData);
+            setDeportes(depsData);
+            setHistoriales(histData);
+            setEquipos(equiposData);
+            
+            // Seleccionar el primer campeonato por defecto
+            if (campsData.length > 0) {
+                setCampeonatoSeleccionado(campsData[0].id);
+            }
+        } catch (error) {
+            console.error('Error cargando datos:', error);
         }
-    ];
+        setLoading(false);
+    };
 
-    // Categorías deportivas
+    // Obtener campeonatos finalizados para el carrusel
+    const featuredActivities = campeonatos
+        .filter(camp => camp.Estado === 'Finalizado')
+        .slice(0, 3)
+        .map(camp => {
+            const equiposCount = historiales.filter(h => h.IDCampeonato === camp.id).length;
+            return {
+                id: camp.id,
+                title: camp.Nombre,
+                image: camp.Logo || "https://tse1.mm.bing.net/th/id/OIP.V9sOj0mNN5AEU0o9wwBr2AHaKe?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3",
+                date: new Date(camp.Fecha_Inicio).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }),
+                status: camp.Estado,
+                description: `Campeonato ${deportes.find(d => d.id === camp.IDDeporte)?.Nombre || 'deportivo'}`,
+                participants: equiposCount * 15 // Estimación de jugadores
+            };
+        });
+
+    // Categorías deportivas dinámicas desde la BD
     const categories = [
         { id: 'todas', name: 'Todas', icon: '🏆' },
-        { id: 'futbol', name: 'Fútbol', icon: '⚽' },
-        { id: 'baloncesto', name: 'Baloncesto', icon: '🏀' },
-        { id: 'voleibol', name: 'Voleibol', icon: '🏐' },
-        { id: 'atletismo', name: 'Atletismo', icon: '🏃‍♂️' },
-        { id: 'natacion', name: 'Natación', icon: '🏊‍♀️' },
-        { id: 'tenis', name: 'Tenis', icon: '🎾' },
-        { id: 'otros', name: 'Otros', icon: '🏅' }
+        ...deportes.map(deporte => ({
+            id: deporte.id,
+            name: deporte.Nombre,
+            icon: deporte.Nombre === 'Fútbol 11' ? '⚽' :
+                  deporte.Nombre === 'Baloncesto' ? '🏀' :
+                  deporte.Nombre === 'Voleibol' ? '🏐' : '🏅'
+        }))
     ];
 
-    // Actividades por categorías
-    const activities = [
-        {
-            id: 1,
-            title: "Liga de Fútbol Sala",
-            category: "futbol",
-            date: "Nov 5",
-            status: "Activa",
-            participants: 120,
-            image: "https://www.anfp.cl/wp-content/uploads/2024/12/Liga-Evolucion-Futsal-Chile.jpg"
-        },
-        {
-            id: 2,
-            title: "Torneo 3x3 Baloncesto",
-            category: "baloncesto",
-            date: "Nov 8",
-            status: "Inscripciones",
-            participants: 64,
-            image: "https://tse1.mm.bing.net/th/id/OIP.V9sOj0mNN5AEU0o9wwBr2AHaKe?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3"
-        },
-        {
-            id: 3,
-            title: "Copa de Voleibol Femenino",
-            category: "voleibol",
-            date: "Nov 12",
-            status: "Próximamente",
-            participants: 96,
-            image: "https://www.anfp.cl/wp-content/uploads/2024/12/Liga-Evolucion-Futsal-Chile.jpg"
-        },
-        {
-            id: 4,
-            title: "Competencia de Natación",
-            category: "natacion",
-            date: "Nov 15",
-            status: "Inscripciones",
-            participants: 45,
-            image: "https://www.anfp.cl/wp-content/uploads/2024/12/Liga-Evolucion-Futsal-Chile.jpg"
-        },
-        {
-            id: 5,
-            title: "Torneo de Tenis Individual",
-            category: "tenis",
-            date: "Nov 18",
-            status: "Próximamente",
-            participants: 32,
-            image: "https://www.anfp.cl/wp-content/uploads/2024/12/Liga-Evolucion-Futsal-Chile.jpg"
-        },
-        {
-            id: 6,
-            title: "Cross Country Universitario",
-            category: "atletismo",
-            date: "Nov 20",
-            status: "Activa",
-            participants: 150,
-            image: "/api/placeholder/300/200"
-        }
-    ];
+    // Actividades basadas en campeonatos reales
+    const activities = campeonatos.map(camp => {
+        const equiposCount = historiales.filter(h => h.IDCampeonato === camp.id).length;
+        return {
+            id: camp.id,
+            title: camp.Nombre,
+            category: camp.IDDeporte || 'otros',
+            date: new Date(camp.Fecha_Inicio).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }),
+            status: camp.Estado === 'En Curso' ? 'Activa' : 
+                    camp.Estado === 'Pendiente' ? 'Próximamente' : 
+                    camp.Estado === 'Finalizado' ? 'Finalizado' : 'Inscripciones',
+            participants: equiposCount * 15,
+            image: camp.Logo || "https://www.anfp.cl/wp-content/uploads/2024/12/Liga-Evolucion-Futsal-Chile.jpg"
+        };
+    });
 
     const filteredActivities = selectedCategory === 'todas'
         ? activities
         : activities.filter(activity => activity.category === selectedCategory);
 
     const nextSlide = () => {
-        setCurrentSlide((prev) => (prev + 1) % featuredActivities.length);
+        if (featuredActivities.length > 0) {
+            setCurrentSlide((prev) => (prev + 1) % featuredActivities.length);
+        }
     };
 
     const prevSlide = () => {
-        setCurrentSlide((prev) => (prev - 1 + featuredActivities.length) % featuredActivities.length);
+        if (featuredActivities.length > 0) {
+            setCurrentSlide((prev) => (prev - 1 + featuredActivities.length) % featuredActivities.length);
+        }
     };
 
     const getStatusColor = (status) => {
         switch (status) {
             case 'Activa':
-            case 'En curso':
+            case 'En Curso':
                 return 'bg-[#34D399] text-[#065F46]';
             case 'Inscripciones':
             case 'Inscripciones abiertas':
                 return 'bg-yellow-500 text-black';
             case 'Próximamente':
+            case 'Pendiente':
                 return 'bg-[#A7F3D0] text-[#065F46]';
+            case 'Finalizado':
+                return 'bg-gray-400 text-white';
             default:
                 return 'bg-[#E5E7EB] text-[#065F46]';
         }
     };
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-white flex items-center justify-center">
+                <div className="text-center">
+                    <div className="w-16 h-16 border-4 border-[#34D399] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <p className="text-[#065F46] text-lg font-semibold">Cargando datos...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-white">
@@ -266,9 +271,12 @@ const Home = () => {
 
                                             {/* Botones de Acción Compactos */}
                                             <div className="flex flex-col sm:flex-row gap-3">
-                                                <button className="group bg-gradient-to-r from-[#34D399] to-[#065F46] hover:from-[#065F46] hover:to-[#34D399] text-white font-bold py-3 px-6 rounded-xl text-base transition-all duration-300 transform hover:scale-105 shadow-xl">
+                                                <button 
+                                                    onClick={() => navigate('/login')}
+                                                    className="group bg-gradient-to-r from-[#34D399] to-[#065F46] hover:from-[#065F46] hover:to-[#34D399] text-white font-bold py-3 px-6 rounded-xl text-base transition-all duration-300 transform hover:scale-105 shadow-xl"
+                                                >
                                                     <span className="flex items-center justify-center">
-                                                        ¡INSCRÍBETE!
+                                                        Iniciar Sesión
                                                         <span className="ml-2 group-hover:translate-x-1 transition-transform">🚀</span>
                                                     </span>
                                                 </button>
@@ -447,10 +455,6 @@ const Home = () => {
                                             <span>{activity.participants} participantes</span>
                                         </div>
                                     </div>
-
-                                    <button className="w-full mt-4 bg-[#34D399] hover:bg-[#065F46] text-[#065F46] hover:text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200">
-                                        Ver detalles
-                                    </button>
                                 </div>
                             </div>
                         ))}
@@ -470,6 +474,167 @@ const Home = () => {
                 </div>
             </div>
 
+            {/* Tablas de Posiciones */}
+            <div className="bg-gradient-to-b from-white to-[#F3F4F6] py-16">
+                <div className="max-w-7xl mx-auto px-4">
+                    <div className="text-center mb-12">
+                        <h2 className="text-4xl md:text-5xl font-bold text-[#065F46] mb-4">
+                            Tablas de Posiciones
+                        </h2>
+                        <p className="text-lg text-[#065F46] opacity-80">
+                            Consulta las estadísticas en vivo de todos los campeonatos
+                        </p>
+                    </div>
+
+                    {/* Selector de Campeonatos */}
+                    <div className="mb-8 flex flex-wrap justify-center gap-3">
+                        {campeonatos.map(camp => (
+                            <button
+                                key={camp.id}
+                                onClick={() => setCampeonatoSeleccionado(camp.id)}
+                                className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${
+                                    campeonatoSeleccionado === camp.id
+                                        ? 'bg-gradient-to-r from-[#34D399] to-[#065F46] text-white shadow-lg transform scale-105'
+                                        : 'bg-white text-[#065F46] border-2 border-[#34D399] hover:bg-[#A7F3D0]'
+                                }`}
+                            >
+                                {camp.Nombre}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Tabla de Posiciones del Campeonato Seleccionado */}
+                    {campeonatoSeleccionado && (() => {
+                        const tablaEquipos = historiales
+                            .filter(h => h.IDCampeonato === campeonatoSeleccionado)
+                            .sort((a, b) => {
+                                if (b.Puntos !== a.Puntos) return b.Puntos - a.Puntos;
+                                if (b.DG !== a.DG) return b.DG - a.DG;
+                                return b.GF - a.GF;
+                            })
+                            .map((h, index) => {
+                                const equipo = equipos.find(e => e.id === h.IDEquipo);
+                                return { ...h, equipoNombre: equipo?.Nombre || 'Equipo', posicion: index + 1 };
+                            });
+
+                        const campeonato = campeonatos.find(c => c.id === campeonatoSeleccionado);
+
+                        return (
+                            <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-[#34D399]">
+                                {/* Header de la Tabla */}
+                                <div className="bg-gradient-to-r from-[#065F46] to-[#34D399] p-6 text-white">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <h3 className="text-2xl font-bold mb-2">{campeonato?.Nombre}</h3>
+                                            <div className="flex gap-4 text-sm opacity-90">
+                                                <span>🏆 {deportes.find(d => d.id === campeonato?.IDDeporte)?.Nombre || 'Deporte'}</span>
+                                                <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                                                    campeonato?.Estado === 'En Curso' ? 'bg-green-400 text-green-900' :
+                                                    campeonato?.Estado === 'Finalizado' ? 'bg-gray-400 text-gray-900' :
+                                                    'bg-yellow-400 text-yellow-900'
+                                                }`}>
+                                                    {campeonato?.Estado}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            <div className="text-sm opacity-90">Equipos Participantes</div>
+                                            <div className="text-4xl font-bold">{tablaEquipos.length}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Tabla Responsive */}
+                                <div className="overflow-x-auto">
+                                    <table className="w-full">
+                                        <thead className="bg-[#F3F4F6]">
+                                            <tr>
+                                                <th className="px-4 py-4 text-left text-sm font-bold text-[#065F46]">Pos</th>
+                                                <th className="px-4 py-4 text-left text-sm font-bold text-[#065F46]">Equipo</th>
+                                                <th className="px-4 py-4 text-center text-sm font-bold text-[#065F46]">PJ</th>
+                                                <th className="px-4 py-4 text-center text-sm font-bold text-[#065F46]">PG</th>
+                                                <th className="px-4 py-4 text-center text-sm font-bold text-[#065F46]">PE</th>
+                                                <th className="px-4 py-4 text-center text-sm font-bold text-[#065F46]">PP</th>
+                                                <th className="px-4 py-4 text-center text-sm font-bold text-[#065F46]">GF</th>
+                                                <th className="px-4 py-4 text-center text-sm font-bold text-[#065F46]">GC</th>
+                                                <th className="px-4 py-4 text-center text-sm font-bold text-[#065F46]">DG</th>
+                                                <th className="px-4 py-4 text-center text-sm font-bold text-[#065F46] bg-[#34D399] text-white">PTS</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {tablaEquipos.length === 0 ? (
+                                                <tr>
+                                                    <td colSpan="10" className="px-4 py-12 text-center text-[#065F46] opacity-70">
+                                                        No hay estadísticas disponibles para este campeonato
+                                                    </td>
+                                                </tr>
+                                            ) : (
+                                                tablaEquipos.map((equipo, index) => (
+                                                    <tr
+                                                        key={equipo.id}
+                                                        className={`border-b border-gray-200 hover:bg-[#F9FAFB] transition-colors ${
+                                                            index < 3 ? 'bg-green-50' : ''
+                                                        }`}
+                                                    >
+                                                        <td className="px-4 py-4">
+                                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
+                                                                index === 0 ? 'bg-yellow-400 text-yellow-900' :
+                                                                index === 1 ? 'bg-gray-300 text-gray-900' :
+                                                                index === 2 ? 'bg-orange-400 text-orange-900' :
+                                                                'bg-[#E5E7EB] text-[#065F46]'
+                                                            }`}>
+                                                                {equipo.posicion}
+                                                            </div>
+                                                        </td>
+                                                        <td className="px-4 py-4">
+                                                            <div className="font-semibold text-[#065F46]">{equipo.equipoNombre}</div>
+                                                        </td>
+                                                        <td className="px-4 py-4 text-center text-[#065F46]">{equipo.PJ}</td>
+                                                        <td className="px-4 py-4 text-center text-green-600 font-semibold">{equipo.PG}</td>
+                                                        <td className="px-4 py-4 text-center text-yellow-600 font-semibold">{equipo.PE}</td>
+                                                        <td className="px-4 py-4 text-center text-red-600 font-semibold">{equipo.PP}</td>
+                                                        <td className="px-4 py-4 text-center text-[#065F46]">{equipo.GF}</td>
+                                                        <td className="px-4 py-4 text-center text-[#065F46]">{equipo.GC}</td>
+                                                        <td className="px-4 py-4 text-center">
+                                                            <span className={`font-semibold ${
+                                                                equipo.DG > 0 ? 'text-green-600' :
+                                                                equipo.DG < 0 ? 'text-red-600' :
+                                                                'text-[#065F46]'
+                                                            }`}>
+                                                                {equipo.DG > 0 ? '+' : ''}{equipo.DG}
+                                                            </span>
+                                                        </td>
+                                                        <td className="px-4 py-4 text-center">
+                                                            <span className="inline-block bg-[#34D399] text-white font-bold px-3 py-1 rounded-full">
+                                                                {equipo.Puntos}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                ))
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                {/* Leyenda */}
+                                <div className="bg-[#F3F4F6] p-4 border-t-2 border-[#34D399]">
+                                    <div className="flex flex-wrap gap-4 text-xs text-[#065F46]">
+                                        <span><strong>PJ:</strong> Partidos Jugados</span>
+                                        <span><strong>PG:</strong> Partidos Ganados</span>
+                                        <span><strong>PE:</strong> Partidos Empatados</span>
+                                        <span><strong>PP:</strong> Partidos Perdidos</span>
+                                        <span><strong>GF:</strong> Goles a Favor</span>
+                                        <span><strong>GC:</strong> Goles en Contra</span>
+                                        <span><strong>DG:</strong> Diferencia de Goles</span>
+                                        <span><strong>PTS:</strong> Puntos</span>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })()}
+                </div>
+            </div>
+
             {/* Call to Action Final */}
             <div className="bg-[#065F46] text-white py-16">
                 <div className="max-w-4xl mx-auto text-center px-4">
@@ -480,10 +645,16 @@ const Home = () => {
                         Descubre tu potencial, supera tus límites y forma parte de la familia deportiva universitaria
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <button className="bg-[#34D399] hover:bg-[#A7F3D0] text-[#065F46] font-bold py-4 px-8 rounded-lg text-lg transition-colors duration-200">
-                            Inscríbete Ahora
+                        <button 
+                            onClick={() => navigate('/login')}
+                            className="bg-[#34D399] hover:bg-[#A7F3D0] text-[#065F46] font-bold py-4 px-8 rounded-lg text-lg transition-colors duration-200"
+                        >
+                            Iniciar Sesión
                         </button>
-                        <button className="border-2 border-[#34D399] text-[#34D399] hover:bg-[#34D399] hover:text-[#065F46] font-bold py-4 px-8 rounded-lg text-lg transition-colors duration-200">
+                        <button 
+                            onClick={() => navigate('/calendario')}
+                            className="border-2 border-[#34D399] text-[#34D399] hover:bg-[#34D399] hover:text-[#065F46] font-bold py-4 px-8 rounded-lg text-lg transition-colors duration-200"
+                        >
                             Ver Calendario
                         </button>
                     </div>
