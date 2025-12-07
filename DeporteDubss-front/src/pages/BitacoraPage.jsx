@@ -32,7 +32,7 @@ const BitacoraPage = () => {
       setLogs(data.logs);
       setTotal(data.total);
     } catch (err) {
-      console.error('Error al obtener logs:', err);
+      console.error('Error al obtener loges:', err);
       setError('Error al cargar la bitácora');
     } finally {
       setLoading(false);
