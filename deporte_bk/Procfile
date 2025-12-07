@@ -1,0 +1,1 @@
+web: python manage.py migrate && python manage.py poblacion && gunicorn deporte_bk.wsgi --log-file -
