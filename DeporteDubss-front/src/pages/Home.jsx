@@ -19,6 +19,7 @@ const Home = () => {
     const [partidosPendientes, setPartidosPendientes] = useState([]);
     const [prediccionPartido, setPrediccionPartido] = useState(null);
     const [loadingPartido, setLoadingPartido] = useState(false);
+    const [partidoEnAnalisis, setPartidoEnAnalisis] = useState(null);
 
     useEffect(() => {
         cargarDatos();
@@ -263,6 +264,7 @@ Genera SOLO un JSON válido (sin markdown, sin explicaciones adicionales) con la
     // Función para predecir resultado de un partido
     const predecirPartido = async (partido) => {
         setLoadingPartido(true);
+        setPartidoEnAnalisis(partido.id);
         setPrediccionPartido(null);
 
         try {
@@ -365,6 +367,7 @@ Genera SOLO un JSON válido (sin markdown) con la siguiente estructura:
         }
 
         setLoadingPartido(false);
+        setPartidoEnAnalisis(null);
     };
 
     // Función para análisis detallado de un equipo
@@ -1099,9 +1102,9 @@ Genera un análisis detallado de máximo 150 palabras que incluya:
                                 <button
                                     onClick={() => predecirPartido(partido)}
                                     disabled={loadingPartido}
-                                    className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2"
+                                    className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    {loadingPartido ? (
+                                    {loadingPartido && partidoEnAnalisis === partido.id ? (
                                         <>
                                             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                                             Analizando...
@@ -1117,7 +1120,7 @@ Genera un análisis detallado de máximo 150 palabras que incluya:
                     </div>
 
                     {/* Resultado de la predicción */}
-                    {prediccionPartido && (
+                    {prediccionPartido && !loadingPartido && (
                         <div className="bg-gradient-to-br from-blue-100 to-cyan-100 rounded-3xl p-8 border-4 border-blue-300 shadow-2xl">
                             <div className="text-center mb-6">
                                 <h3 className="text-3xl font-black text-blue-900 mb-2">Predicción del Partido</h3>

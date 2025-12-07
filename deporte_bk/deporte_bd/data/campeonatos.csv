@@ -1,4 +1,8 @@
 id,id_usuario,id_deporte,nombre,fecha_inicio,fecha_fin,estado
-1,1002,1,Liga Amateur Universitaria 2024,01/03/2024,15/06/2024,Finalizado
-2,1003,2,Torneo Universitario de Básquet 2024,05/04/2024,20/07/2024,Finalizado
-3,1004,3,Copa Universitaria de Voleibol 2024,10/05/2024,25/08/2024,Finalizado
+1,1002,1,Liga Universitaria 2024-1,01/02/2024,30/06/2024,Finalizado
+2,1002,1,Liga Universitaria 2024-2,01/08/2024,15/12/2024,Finalizado
+3,1002,1,Liga Universitaria 2025-1,01/02/2025,30/06/2025,En Curso
+4,1002,1,Liga Universitaria 2025-2,01/08/2025,15/12/2025,Planificado
+5,1003,4,Torneo de Fútsal 2024-2,15/08/2024,10/12/2024,Finalizado
+6,1003,5,Liga Femenina de Básquet 2025,01/03/2025,30/07/2025,En Curso
+7,1004,3,Copa Universitaria de Voleibol 2025,15/04/2025,20/08/2025,En Curso
