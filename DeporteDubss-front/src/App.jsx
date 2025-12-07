@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 import LoginPage from "./pages/LoginPage"
 import PerfilPage from "./pages/PerfilPage.jsx"
 import Navbar from "./components/navbar/Navbar.jsx"
+import Sidebar from "./components/sidebar/Sidebar.jsx"
 import Dashboard from "./pages/Dashboard.jsx"
 import { AuthProvider } from "./context/AuthContext.jsx"
 import ProtectedRoute from "./components/ProtectedRoute"
@@ -30,8 +31,11 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <Navbar />
-        <Routes>
-          <Route path="/" element={<LoginPage />} />
+        <div className="flex">
+          <Sidebar />
+          <div className="flex-1">
+            <Routes>
+              <Route path="/" element={<LoginPage />} />
           
           {/* Dashboards por rol */}
           <Route
@@ -210,7 +214,9 @@ function App() {
               </ProtectedRoute>
             }
           />
-        </Routes>
+            </Routes>
+          </div>
+        </div>
       </AuthProvider>
     </BrowserRouter>
   )
