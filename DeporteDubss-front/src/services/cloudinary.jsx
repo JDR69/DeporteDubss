@@ -1,5 +1,5 @@
 
-// Cambia el UPLOAD_PRESET por el de tu configuración de Cloudinary
+// Cambia el UPLOAD_PRESET por 1241241el de tu configuración de Cloudinary
 const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dfkv6g00w/image/upload';
 const UPLOAD_PRESET = 'DeporteDubss'; // Pega aquí tu upload_preset de Cloudinary
 
