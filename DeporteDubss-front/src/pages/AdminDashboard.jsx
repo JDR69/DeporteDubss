@@ -152,13 +152,7 @@ const AdminDashboard = () => {
                 <div className="text-3xl mb-2">🏟️</div>
                 <div className="font-semibold text-red-700">Instalaciones</div>
               </Link>
-              <Link
-                to="/rol-permisos"
-                className="p-4 bg-indigo-50 border-2 border-indigo-200 rounded-lg hover:bg-indigo-100 transition-colors text-center"
-              >
-                <div className="text-3xl mb-2">🔐</div>
-                <div className="font-semibold text-indigo-700">Roles y Permisos</div>
-              </Link>
+          
               <Link
                 to="/bitacora"
                 className="p-4 bg-slate-50 border-2 border-slate-200 rounded-lg hover:bg-slate-100 transition-colors text-center"

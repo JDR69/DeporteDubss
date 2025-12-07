@@ -8,6 +8,12 @@ import { ROLES } from '../utils/permissions';
 import ChampionshipCard from '../components/championships/ChampionshipCard';
 import ChampionshipDetail from '../components/championships/ChampionshipDetail';
 import EnrollTeamModal from '../components/championships/EnrollTeamModal';
+import groqService from '../services/groqService';
+import { 
+    generarReporteCampeonatosPDF, 
+    generarReporteCampeonatosExcel, 
+    generarReporteCampeonatosJSON 
+} from '../services/reportService';
 
 function CampeonatosPage() {
     const { user } = useAuth ? useAuth() : { user: null };
@@ -30,6 +36,9 @@ function CampeonatosPage() {
     const [loading, setLoading] = useState(false);
     const [mensaje, setMensaje] = useState('');
     const [error, setError] = useState('');
+    const [recomendaciones, setRecomendaciones] = useState(null);
+    const [loadingRecomendaciones, setLoadingRecomendaciones] = useState(false);
+    const [showRecomendaciones, setShowRecomendaciones] = useState(false);
 
     // Check if user is admin
     const isAdmin = user && (
@@ -168,6 +177,128 @@ function CampeonatosPage() {
         setTimeout(() => setMensaje(''), 3000);
     };
 
+    const recomendacion_controllers = async () => {
+        setLoadingRecomendaciones(true);
+        setError('');
+        
+        try {
+            // Analizar el historial de campeonatos
+            const analisisHistorico = campeonatos.map(camp => {
+                const deporte = deportes.find(d => d.id === camp.IDDeporte);
+                const categoria = categorias.find(c => c.id === camp.IDCategoria);
+                return {
+                    nombre: camp.Nombre,
+                    deporte: deporte?.Nombre || 'Desconocido',
+                    categoria: categoria?.Nombre || 'Desconocida',
+                    fechaInicio: camp.Fecha_Inicio,
+                    fechaFin: camp.Fecha_Fin,
+                    estado: camp.Estado
+                };
+            });
+
+            // Agrupar campeonatos por deporte
+            const campeonatosPorDeporte = {};
+            analisisHistorico.forEach(camp => {
+                if (!campeonatosPorDeporte[camp.deporte]) {
+                    campeonatosPorDeporte[camp.deporte] = [];
+                }
+                campeonatosPorDeporte[camp.deporte].push(camp);
+            });
+
+            // Identificar patrones de nombres (ej: "Liga Universitaria 2024-1", "2024-2")
+            const patronesNombres = {};
+            analisisHistorico.forEach(camp => {
+                // Extraer patrón base del nombre (sin año/semestre)
+                const nombreBase = camp.nombre.replace(/\d{4}[-_]?\d?/g, '').trim();
+                if (!patronesNombres[nombreBase]) {
+                    patronesNombres[nombreBase] = [];
+                }
+                patronesNombres[nombreBase].push(camp.nombre);
+            });
+
+            const prompt = `Eres un experto en gestión deportiva universitaria. Analiza el historial de campeonatos y genera recomendaciones inteligentes.
+
+**HISTORIAL DE CAMPEONATOS:**
+${analisisHistorico.map((c, i) => `${i + 1}. ${c.nombre} - ${c.deporte} (${c.categoria}) - ${c.estado}`).join('\n')}
+
+**ANÁLISIS POR DEPORTE:**
+${Object.entries(campeonatosPorDeporte).map(([deporte, camps]) => 
+    `- ${deporte}: ${camps.length} campeonato(s)`
+).join('\n')}
+
+**PATRONES DETECTADOS:**
+${Object.entries(patronesNombres).map(([patron, nombres]) => 
+    `- "${patron}": ${nombres.length} edición(es) - Últimas: ${nombres.slice(-2).join(', ')}`
+).join('\n')}
+
+**FECHA ACTUAL:** ${new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}
+
+Genera SOLO un JSON válido (sin markdown) con la siguiente estructura:
+{
+  "continuarTradicion": {
+    "recomendado": boolean,
+    "campeonato": "Nombre del próximo campeonato siguiendo la tradición",
+    "razon": "Explicación breve (máx 100 palabras)",
+    "deporte": "Nombre del deporte",
+    "fechaSugerida": "Mes/Año sugerido"
+  },
+  "nuevasPropuestas": [
+    {
+      "nombre": "Nombre del campeonato",
+      "deporte": "Deporte",
+      "categoria": "Categoría",
+      "razon": "Por qué es una buena idea (máx 80 palabras)",
+      "popularidadEstimada": "Alta/Media/Baja"
+    }
+  ],
+  "analisisGeneral": "Resumen del análisis en 2-3 líneas sobre tendencias y oportunidades"
+}`;
+
+            const response = await groqService.generateResponse(prompt, 'llama-3.3-70b-versatile', {
+                temperature: 0.6,
+                max_tokens: 1500
+            });
+
+            // Parsear respuesta
+            let recomendacionesData;
+            try {
+                const cleanResponse = response.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+                recomendacionesData = JSON.parse(cleanResponse);
+            } catch (e) {
+                console.error('Error parsing JSON:', e);
+                // Fallback con recomendaciones básicas
+                recomendacionesData = {
+                    continuarTradicion: {
+                        recomendado: true,
+                        campeonato: "Liga Universitaria 2025-2",
+                        razon: "Basándose en el historial, existe una tradición de ligas semestrales que han sido exitosas.",
+                        deporte: "Fútbol 11",
+                        fechaSugerida: "Agosto 2025"
+                    },
+                    nuevasPropuestas: [
+                        {
+                            nombre: "Torneo Interdepartamental",
+                            deporte: "Múltiples deportes",
+                            categoria: "Mixto",
+                            razon: "Diversificar la oferta deportiva puede aumentar la participación estudiantil.",
+                            popularidadEstimada: "Alta"
+                        }
+                    ],
+                    analisisGeneral: "Se detecta un patrón consistente de campeonatos semestrales. Hay oportunidad de expandir a nuevos deportes y categorías."
+                };
+            }
+
+            setRecomendaciones(recomendacionesData);
+            setShowRecomendaciones(true);
+
+        } catch (error) {
+            console.error('Error generando recomendaciones:', error);
+            setError('Error al generar recomendaciones con IA');
+        }
+
+        setLoadingRecomendaciones(false);
+    };
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 py-8 px-4">
             <Loading show={loading} message={loading ? 'Procesando...' : 'Cargando...'} />
@@ -176,6 +307,187 @@ function CampeonatosPage() {
                     <h1 className="text-4xl font-bold text-emerald-900 mb-2">Gestión de Campeonatos</h1>
                     <p className="text-emerald-700">Crea y administra campeonatos deportivos</p>
                 </div>
+
+                {/* Sección de Recomendaciones IA */}
+                <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl shadow-lg p-8 border-2 border-purple-200 mb-8 hover:shadow-xl transition-shadow">
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-lg flex items-center justify-center animate-pulse">
+                                <span className="text-2xl">🤖</span>
+                            </div>
+                            <div>
+                                <h2 className="text-2xl font-bold text-purple-900">Recomendaciones con IA</h2>
+                                <p className="text-purple-600 text-sm">Machine Learning analiza tu historial de campeonatos</p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={recomendacion_controllers}
+                            disabled={loadingRecomendaciones || campeonatos.length === 0}
+                            className={`px-6 py-3 rounded-xl font-bold transition-all duration-300 ${
+                                loadingRecomendaciones || campeonatos.length === 0
+                                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                    : 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transform hover:scale-105'
+                            }`}
+                        >
+                            {loadingRecomendaciones ? (
+                                <div className="flex items-center gap-2">
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    Analizando...
+                                </div>
+                            ) : (
+                                ' Generar Recomendaciones'
+                            )}
+                        </button>
+                    </div>
+
+                    {campeonatos.length === 0 && (
+                        <div className="text-center py-8 text-purple-600">
+                            <p className="text-lg">📊 Necesitas al menos un campeonato registrado para generar recomendaciones</p>
+                        </div>
+                    )}
+
+                    {/* Mostrar Recomendaciones */}
+                    {showRecomendaciones && recomendaciones && (
+                        <div className="space-y-6 animate-fadeIn">
+                            {/* Análisis General */}
+                            <div className="bg-white rounded-xl p-6 border-2 border-purple-200">
+                                <h3 className="font-bold text-purple-900 mb-3 flex items-center gap-2">
+                                    <span>📈</span>
+                                    Análisis General
+                                </h3>
+                                <p className="text-gray-700 leading-relaxed">{recomendaciones.analisisGeneral}</p>
+                            </div>
+
+                            {/* Continuar Tradición */}
+                            {recomendaciones.continuarTradicion?.recomendado && (
+                                <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border-2 border-green-300">
+                                    <div className="flex items-start gap-4">
+                                        <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                            <span className="text-2xl">✅</span>
+                                        </div>
+                                        <div className="flex-1">
+                                            <h3 className="font-bold text-green-900 text-xl mb-2">Continuar Tradición</h3>
+                                            <div className="bg-white rounded-lg p-4 mb-3">
+                                                <p className="text-2xl font-bold text-green-700 mb-1">
+                                                    {recomendaciones.continuarTradicion.campeonato}
+                                                </p>
+                                                <div className="flex gap-4 text-sm text-gray-600 mt-2">
+                                                    <span>🏀 {recomendaciones.continuarTradicion.deporte}</span>
+                                                    <span>📅 {recomendaciones.continuarTradicion.fechaSugerida}</span>
+                                                </div>
+                                            </div>
+                                            <p className="text-gray-700 leading-relaxed">
+                                                {recomendaciones.continuarTradicion.razon}
+                                            </p>
+                                            <button
+                                                onClick={() => {
+                                                    setNombre(recomendaciones.continuarTradicion.campeonato);
+                                                    setDeporteNombre(recomendaciones.continuarTradicion.deporte);
+                                                    setShowRecomendaciones(false);
+                                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                                }}
+                                                className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold"
+                                            >
+                                                📝 Usar esta Recomendación
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Nuevas Propuestas */}
+                            {recomendaciones.nuevasPropuestas && recomendaciones.nuevasPropuestas.length > 0 && (
+                                <div>
+                                    <h3 className="font-bold text-purple-900 text-xl mb-4 flex items-center gap-2">
+                                        <span>💡</span>
+                                        Nuevas Propuestas
+                                    </h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {recomendaciones.nuevasPropuestas.map((propuesta, index) => (
+                                            <div
+                                                key={index}
+                                                className="bg-white rounded-xl p-5 border-2 border-indigo-200 hover:border-indigo-400 transition-all hover:shadow-lg"
+                                            >
+                                                <div className="flex items-start justify-between mb-3">
+                                                    <h4 className="font-bold text-indigo-900 text-lg flex-1">
+                                                        {propuesta.nombre}
+                                                    </h4>
+                                                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                                                        propuesta.popularidadEstimada === 'Alta' ? 'bg-green-100 text-green-700' :
+                                                        propuesta.popularidadEstimada === 'Media' ? 'bg-yellow-100 text-yellow-700' :
+                                                        'bg-gray-100 text-gray-700'
+                                                    }`}>
+                                                        {propuesta.popularidadEstimada}
+                                                    </span>
+                                                </div>
+                                                <div className="flex gap-3 text-sm text-gray-600 mb-3">
+                                                    <span>🏆 {propuesta.deporte}</span>
+                                                    <span>👥 {propuesta.categoria}</span>
+                                                </div>
+                                                <p className="text-gray-700 text-sm leading-relaxed mb-4">
+                                                    {propuesta.razon}
+                                                </p>
+                                                <button
+                                                    onClick={() => {
+                                                        setNombre(propuesta.nombre);
+                                                        setDeporteNombre(propuesta.deporte);
+                                                        const cat = categorias.find(c => c.Nombre === propuesta.categoria);
+                                                        if (cat) setCategoriaId(cat.id.toString());
+                                                        setShowRecomendaciones(false);
+                                                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                                                    }}
+                                                    className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-semibold text-sm"
+                                                >
+                                                    📝 Usar esta Propuesta
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            <button
+                                onClick={() => setShowRecomendaciones(false)}
+                                className="w-full py-3 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors font-semibold"
+                            >
+                                Cerrar Recomendaciones
+                            </button>
+                        </div>
+                    )}
+                </div>
+
+                {/* Sección de Exportación de Reportes */}
+                {campeonatos.length > 0 && (
+                    <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl shadow-lg p-6 border-2 border-blue-200 mb-8">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-lg flex items-center justify-center">
+                                <span className="text-2xl">📊</span>
+                            </div>
+                            <h2 className="text-2xl font-bold text-blue-900">Exportar Lista de Campeonatos</h2>
+                        </div>
+                        <p className="text-blue-700 mb-6">Descarga el listado completo de campeonatos en diferentes formatos</p>
+                        <div className="flex flex-wrap gap-4">
+                            <button
+                                onClick={() => generarReporteCampeonatosPDF(campeonatos, deportes, categorias)}
+                                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl hover:from-red-600 hover:to-red-700 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold"
+                            >
+                                Exportar a PDF
+                            </button>
+                            <button
+                                onClick={() => generarReporteCampeonatosExcel(campeonatos, deportes, categorias)}
+                                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl hover:from-green-600 hover:to-green-700 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold"
+                            >
+                                Exportar a Excel
+                            </button>
+                            <button
+                                onClick={() => generarReporteCampeonatosJSON(campeonatos, deportes, categorias)}
+                                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl hover:from-purple-600 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold"
+                            >
+                                Exportar a JSON
+                            </button>
+                        </div>
+                    </div>
+                )}
                 
                 {/* Formulario de Creación */}
                 <div className="bg-white rounded-2xl shadow-lg p-8 border-2 border-emerald-200 mb-8 hover:shadow-xl transition-shadow">

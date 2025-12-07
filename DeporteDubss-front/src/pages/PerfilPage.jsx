@@ -1,102 +1,188 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
-
+import { getUsuario } from '../api/auth'
 
 const PerfilPage = () => {
     const { user } = useAuth();
+    const [userData, setUserData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
 
-    const displayUser = user || { id: 'cargando...', email: 'cargando...' };
+    useEffect(() => {
+        const fetchUserData = async () => {
+            if (!user?.id) {
+                setLoading(false);
+                return;
+            }
+
+            try {
+                setLoading(true);
+                const { data } = await getUsuario(user.id);
+                setUserData(data);
+            } catch (err) {
+                console.error('Error cargando datos del usuario:', err);
+                setError('Error al cargar los datos del perfil');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUserData();
+    }, [user?.id]);
+
+    const getRoleName = (rolId) => {
+        const roles = {
+            1: 'Administrador',
+            2: 'Organizador',
+            3: 'Delegado',
+            4: 'Jugador'
+        };
+        return roles[rolId] || 'Sin Rol';
+    };
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-[#ffffff] flex items-center justify-center">
+                <div className="text-2xl text-[#065F46]">Cargando perfil...</div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="min-h-screen bg-[#ffffff] flex items-center justify-center">
+                <div className="text-2xl text-red-600">{error}</div>
+            </div>
+        );
+    }
+
+    const displayUser = userData || user || {};
 
     return (
-    // Contenedor principal: fondo verde claro, texto verde oscuro, padding y altura mínima
-    <div className="min-h-screen bg-[#ffffff] text-[#065F46] p-4 md:p-8">
-            <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="min-h-screen bg-[#ffffff] text-[#065F46] p-4 md:p-8">
+            <div className="max-w-6xl mx-auto">
                 
-                {/* --- COLUMNA DE PERFIL --- */}
-                {/* Ocupa 1 columna en pantallas medianas y grandes */}
-                <div className="md:col-span-1">
-                    <div className="bg-white rounded-lg shadow-lg p-6 sticky top-8 border border-[#34D399]">
-                        <h2 className="text-2xl font-bold text-center mb-6 text-[#065F46]">
-                            Perfil
-                        </h2>
-                        
-                        {/* Avatar Placeholder */}
-                        <div className="w-28 h-28 rounded-full mx-auto bg-[#E5E7EB] mb-4 flex items-center justify-center overflow-hidden">
-                            {/* Opción 1: Placeholder SVG (sin dependencias)
-                                Reemplaza esto con una <img src={user.avatarUrl} /> si tienes una.
-                            */}
-                            <svg xmlns="http://www.w3.org/2000/svg" className="w-24 h-24 text-[#34D399]" viewBox="0 0 20 20" fill="currentColor">
-                              <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                            </svg>
-
-                            {/* Opción 2: Usando Heroicons (si lo instalaste) */}
-                            {/* <UserCircleIcon className="w-28 h-28 text-gray-500" /> */}
-                        </div>
-
-                        <div className="space-y-3 text-center">
-                            <p className="text-lg">
-                                <span className="font-semibold text-[#34D399] block text-sm">
-                                    Email
+                {/* Tarjeta de Perfil */}
+                <div className="bg-white rounded-lg shadow-lg p-8 border border-[#34D399]">
+                    <h2 className="text-3xl font-bold text-center mb-8 text-[#065F46]">
+                        Mi Perfil
+                    </h2>
+                    
+                    <div className="flex flex-col md:flex-row gap-8">
+                        {/* Avatar */}
+                        <div className="flex flex-col items-center md:w-1/3">
+                            <div className="w-32 h-32 rounded-full bg-[#E5E7EB] mb-4 flex items-center justify-center overflow-hidden">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-28 h-28 text-[#34D399]" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+                            <div className="text-center">
+                                <h3 className="text-2xl font-bold text-[#065F46]">
+                                    {displayUser.Nombre} {displayUser.Apellido}
+                                </h3>
+                                <span className="inline-block mt-2 px-4 py-1 bg-[#34D399] text-white rounded-full text-sm font-semibold">
+                                    {getRoleName(displayUser.IDRol)}
                                 </span>
-                                <span className="truncate text-[#065F46]">{displayUser.email}</span>
-                            </p>
-                            
+                            </div>
                         </div>
 
-                        {/* Botón de ejemplo */}
-                        <button className="w-full mt-8 bg-[#34D399] hover:bg-[#065F46] text-white font-bold py-2 px-4 rounded-lg transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#34D399]">
-                            Editar Perfil
-                        </button>
-                    </div>
-                </div>
+                        {/* Datos del Usuario */}
+                        <div className="md:w-2/3">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                
 
-                {/* --- COLUMNA DE HISTORIAL --- */}
-                {/* Ocupa 3 columnas en pantallas medianas y grandes */}
-                <div className="md:col-span-3">
-                    <div className="bg-white rounded-lg shadow-lg p-6 border border-[#34D399]">
-                        <h2 className="text-3xl font-bold mb-6 border-b border-[#34D399] pb-3 text-[#065F46]">
-                            Historial de Actividades
-                        </h2>
-                        
-                        {/* Lista de Actividades (Placeholders de ejemplo) */}
-                        <div className="space-y-5">
-                            {/* Actividad 1 (Ejemplo) */}
-                            <div className="bg-[#A7F3D0] p-4 rounded-lg flex flex-col sm:flex-row sm:justify-between sm:items-center shadow-md hover:bg-[#34D399] transition duration-300">
-                                <div>
-                                    <h3 className="text-lg font-semibold text-[#065F46]">Carrera Matutina</h3>
-                                    <p className="text-sm text-[#065F46]">Parque Urbano - 5.2 km</p>
+                                {/* Email */}
+                                <div className="bg-[#F0FDF4] p-4 rounded-lg border-l-4 border-[#34D399]">
+                                    <span className="block text-sm font-semibold text-[#065F46] mb-1">
+                                        Correo Electrónico
+                                    </span>
+                                    <span className="text-lg text-[#065F46] break-words">
+                                        {displayUser.Correo || displayUser.email}
+                                    </span>
                                 </div>
-                                <div className="mt-2 sm:mt-0 text-left sm:text-right">
-                                    <span className="text-sm font-medium text-[#065F46]">Hoy, 7:30 AM</span>
-                                    <span className="block text-[#065F46] font-bold text-lg">28:30 min</span>
+
+                                {/* Nombre */}
+                                <div className="bg-[#F0FDF4] p-4 rounded-lg border-l-4 border-[#34D399]">
+                                    <span className="block text-sm font-semibold text-[#065F46] mb-1">
+                                        Nombre
+                                    </span>
+                                    <span className="text-lg text-[#065F46]">
+                                        {displayUser.Nombre}
+                                    </span>
                                 </div>
+
+                                {/* Apellido */}
+                                <div className="bg-[#F0FDF4] p-4 rounded-lg border-l-4 border-[#34D399]">
+                                    <span className="block text-sm font-semibold text-[#065F46] mb-1">
+                                        Apellido
+                                    </span>
+                                    <span className="text-lg text-[#065F46]">
+                                        {displayUser.Apellido}
+                                    </span>
+                                </div>
+
+                                {/* CI */}
+                                {displayUser.CI && (
+                                    <div className="bg-[#F0FDF4] p-4 rounded-lg border-l-4 border-[#34D399]">
+                                        <span className="block text-sm font-semibold text-[#065F46] mb-1">
+                                            Cédula de Identidad
+                                        </span>
+                                        <span className="text-lg text-[#065F46]">
+                                            {displayUser.CI}
+                                        </span>
+                                    </div>
+                                )}
+
+                                {/* Teléfono */}
+                                {displayUser.Telefono && (
+                                    <div className="bg-[#F0FDF4] p-4 rounded-lg border-l-4 border-[#34D399]">
+                                        <span className="block text-sm font-semibold text-[#065F46] mb-1">
+                                            Teléfono
+                                        </span>
+                                        <span className="text-lg text-[#065F46]">
+                                            {displayUser.Telefono}
+                                        </span>
+                                    </div>
+                                )}
+
+                                {/* Dirección */}
+                                {displayUser.Direccion && (
+                                    <div className="bg-[#F0FDF4] p-4 rounded-lg border-l-4 border-[#34D399] md:col-span-2">
+                                        <span className="block text-sm font-semibold text-[#065F46] mb-1">
+                                            Dirección
+                                        </span>
+                                        <span className="text-lg text-[#065F46]">
+                                            {displayUser.Direccion}
+                                        </span>
+                                    </div>
+                                )}
+
+                                {/* Fecha de Nacimiento */}
+                                {displayUser.Fecha_Nacimiento && (
+                                    <div className="bg-[#F0FDF4] p-4 rounded-lg border-l-4 border-[#34D399]">
+                                        <span className="block text-sm font-semibold text-[#065F46] mb-1">
+                                            Fecha de Nacimiento
+                                        </span>
+                                        <span className="text-lg text-[#065F46]">
+                                            {new Date(displayUser.Fecha_Nacimiento).toLocaleDateString('es-ES')}
+                                        </span>
+                                    </div>
+                                )}
+
+                                {/* Estado */}
+                                {displayUser.Estado !== undefined && (
+                                    <div className="bg-[#F0FDF4] p-4 rounded-lg border-l-4 border-[#34D399]">
+                                        <span className="block text-sm font-semibold text-[#065F46] mb-1">
+                                            Estado
+                                        </span>
+                                        <span className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${
+                                            displayUser.Estado ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                        }`}>
+                                            {displayUser.Estado ? 'Activo' : 'Inactivo'}
+                                        </span>
+                                    </div>
+                                )}
                             </div>
-                            {/* Actividad 2 (Ejemplo) */}
-                            <div className="bg-[#A7F3D0] p-4 rounded-lg flex flex-col sm:flex-row sm:justify-between sm:items-center shadow-md hover:bg-[#34D399] transition duration-300">
-                                <div>
-                                    <h3 className="text-lg font-semibold text-[#065F46]">Sesión de Gimnasio (Pecho)</h3>
-                                    <p className="text-sm text-[#065F46]">Gym Center - 1h 15m</p>
-                                </div>
-                                <div className="mt-2 sm:mt-0 text-left sm:text-right">
-                                    <span className="text-sm font-medium text-[#065F46]">Ayer, 6:00 PM</span>
-                                    <span className="block text-[#34D399] font-bold text-lg">Completado</span>
-                                </div>
-                            </div>
-                            {/* Actividad 3 (Ejemplo de algo pendiente) */}
-                            <div className="bg-[#F3F4F6] p-4 rounded-lg flex flex-col sm:flex-row sm:justify-between sm:items-center shadow-md hover:bg-[#A7F3D0] transition duration-300 opacity-90">
-                                <div>
-                                    <h3 className="text-lg font-semibold text-[#065F46]">Partido de Fútbol</h3>
-                                    <p className="text-sm text-[#065F46]">Cancha "Los Amigos"</p>
-                                </div>
-                                <div className="mt-2 sm:mt-0 text-left sm:text-right">
-                                    <span className="text-sm font-medium text-[#065F46]">Mañana, 8:00 PM</span>
-                                    <span className="block text-yellow-500 font-bold text-lg">Pendiente</span>
-                                </div>
-                            </div>
-                            {/* Mensaje de fin de lista */}
-                            <p className="text-center text-[#000000] pt-4">
-                                No hay más actividades registradas.
-                            </p>
                         </div>
                     </div>
                 </div>

@@ -81,9 +81,6 @@ const Sidebar = () => {
               <Link to="/usuarios" className={linkClasses('/usuarios')}>
                 <span className="mr-2">•</span> Usuarios
               </Link>
-              <Link to="/rol-permisos" className={linkClasses('/rol-permisos')}>
-                <span className="mr-2">•</span> Roles
-              </Link>
               <Link to="/bitacora" className={linkClasses('/bitacora')}>
                 <span className="mr-2">•</span> Bitácora
               </Link>
@@ -114,14 +111,8 @@ const Sidebar = () => {
               <Link to="/partidos" className={linkClasses('/partidos')}>
                 <span className="mr-2">•</span> Partidos
               </Link>
-              <Link to="/resultados" className={linkClasses('/resultados')}>
-                <span className="mr-2">•</span> Resultados
-              </Link>
               <Link to="/incidencias" className={linkClasses('/incidencias')}>
                 <span className="mr-2">•</span> Incidencias
-              </Link>
-              <Link to="/fixtures" className={linkClasses('/fixtures')}>
-                <span className="mr-2">•</span> Fixtures
               </Link>
               <Link to="/equipo" className={linkClasses('/equipo')}>
                 <span className="mr-2">•</span> Equipos

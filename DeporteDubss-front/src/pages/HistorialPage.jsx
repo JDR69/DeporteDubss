@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { getHistoriales, getCampeonatos } from '../api/auth';
 import Loading from '../components/loading';
+import { 
+    generarReporteHistorialPDF, 
+    generarReporteHistorialExcel, 
+    generarReporteHistorialJSON 
+} from '../services/reportService';
 
 function HistorialPage() {
     const [historiales, setHistoriales] = useState([]);
@@ -77,7 +82,54 @@ function HistorialPage() {
 
                 {/* Tabla de Clasificaciones - Solo se muestra si hay un campeonato seleccionado */}
                 {filterCampeonato && (
-                    <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-[#34D399]">
+                    <>
+                        {/* Botones de Exportación */}
+                        {sortedHistoriales.length > 0 && (
+                            <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl shadow-lg p-6 mb-6 border-2 border-blue-200">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-lg flex items-center justify-center">
+                                            <span className="text-2xl">📥</span>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-xl font-bold text-blue-900">Exportar Tabla de Posiciones</h3>
+                                            <p className="text-blue-600 text-sm">Descarga la clasificación en diferentes formatos</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="flex flex-wrap gap-3">
+                                    <button
+                                        onClick={() => generarReporteHistorialPDF(
+                                            sortedHistoriales,
+                                            campeonatos.find(c => c.id == filterCampeonato)?.Nombre
+                                        )}
+                                        className="flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-600 text-white px-5 py-3 rounded-xl font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                                    >
+                                        Exportar PDF
+                                    </button>
+                                    <button
+                                        onClick={() => generarReporteHistorialExcel(
+                                            sortedHistoriales,
+                                            campeonatos.find(c => c.id == filterCampeonato)?.Nombre
+                                        )}
+                                        className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-5 py-3 rounded-xl font-semibold hover:from-green-600 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                                    >
+                                        Exportar Excel
+                                    </button>
+                                    <button
+                                        onClick={() => generarReporteHistorialJSON(
+                                            sortedHistoriales,
+                                            campeonatos.find(c => c.id == filterCampeonato)?.Nombre
+                                        )}
+                                        className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-5 py-3 rounded-xl font-semibold hover:from-purple-600 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                                    >
+                                        Exportar JSON
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-[#34D399]">
                         <div className="mb-4">
                             <h2 className="text-2xl font-bold text-[#065F46] text-center">Clasificaciones</h2>
                             <p className="text-center text-gray-600 mt-1">
@@ -131,6 +183,7 @@ function HistorialPage() {
                         )}
                     </div>
                 </div>
+                    </>
                 )}
             </div>
         </div>

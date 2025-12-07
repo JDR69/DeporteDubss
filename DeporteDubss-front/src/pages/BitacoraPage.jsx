@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { obtenerLogsFiltrados } from '../api/admin';
+import { 
+  generarReporteBitacoraPDF, 
+  generarReporteBitacoraExcel, 
+  generarReporteBitacoraJSON 
+} from '../services/reportService';
 
 const BitacoraPage = () => {
   const [logs, setLogs] = useState([]);
@@ -196,6 +201,43 @@ const BitacoraPage = () => {
             <p className="text-indigo-800 font-semibold">
               📊 Total de registros encontrados: <span className="text-2xl">{total}</span>
             </p>
+          </div>
+        )}
+
+        {/* Botones de Exportación */}
+        {!loading && logs.length > 0 && (
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl shadow-lg p-6 mb-6 border-2 border-blue-200">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                  <span className="text-2xl">📥</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-blue-900">Exportar Reporte</h3>
+                  <p className="text-blue-600 text-sm">Descarga los datos en diferentes formatos</p>
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={() => generarReporteBitacoraPDF(logs, filtros)}
+                className="flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-600 text-white px-5 py-3 rounded-xl font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+              >
+                Exportar PDF
+              </button>
+              <button
+                onClick={() => generarReporteBitacoraExcel(logs, filtros)}
+                className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-5 py-3 rounded-xl font-semibold hover:from-green-600 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+              >
+                Exportar Excel
+              </button>
+              <button
+                onClick={() => generarReporteBitacoraJSON(logs, filtros)}
+                className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-5 py-3 rounded-xl font-semibold hover:from-purple-600 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+              >
+                Exportar JSON
+              </button>
+            </div>
           </div>
         )}
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getCampeonatos, getDeportes, getHistoriales, getEquipos } from '../api/auth'
+import { getCampeonatos, getDeportes, getHistoriales, getEquipos, getPartidos, getFixtures, getResultados } from '../api/auth'
 import groqService from '../services/groqService'
 
 const Home = () => {
@@ -20,6 +20,13 @@ const Home = () => {
     const [prediccionPartido, setPrediccionPartido] = useState(null);
     const [loadingPartido, setLoadingPartido] = useState(false);
     const [partidoEnAnalisis, setPartidoEnAnalisis] = useState(null);
+    const [campeonatoPartidos, setCampeonatoPartidos] = useState(null);
+    const [todosPartidos, setTodosPartidos] = useState([]);
+    const [todosFixtures, setTodosFixtures] = useState([]);
+    const [todosResultados, setTodosResultados] = useState([]);
+    const [filtroJornada, setFiltroJornada] = useState('todas');
+    const [filtroEquipo, setFiltroEquipo] = useState('todos');
+    const [partidosSinFiltrar, setPartidosSinFiltrar] = useState([]);
 
     useEffect(() => {
         cargarDatos();
@@ -28,63 +35,142 @@ const Home = () => {
     const cargarDatos = async () => {
         setLoading(true);
         try {
-            const [campeonatosRes, deportesRes, historialesRes, equiposRes] = await Promise.all([
+            const [campeonatosRes, deportesRes, historialesRes, equiposRes, partidosRes, fixturesRes, resultadosRes] = await Promise.all([
                 getCampeonatos(),
                 getDeportes(),
                 getHistoriales(),
-                getEquipos()
+                getEquipos(),
+                getPartidos(),
+                getFixtures(),
+                getResultados()
             ]);
             
             const campsData = Array.isArray(campeonatosRes.data) ? campeonatosRes.data : [];
             const depsData = Array.isArray(deportesRes.data) ? deportesRes.data : [];
             const histData = Array.isArray(historialesRes.data) ? historialesRes.data : [];
             const equiposData = Array.isArray(equiposRes.data) ? equiposRes.data : [];
+            const partidosData = Array.isArray(partidosRes.data) ? partidosRes.data : [];
+            const fixturesData = Array.isArray(fixturesRes.data) ? fixturesRes.data : [];
+            const resultadosData = Array.isArray(resultadosRes.data) ? resultadosRes.data : [];
             
             setCampeonatos(campsData);
             setDeportes(depsData);
             setHistoriales(histData);
             setEquipos(equiposData);
+            setTodosPartidos(partidosData);
+            setTodosFixtures(fixturesData);
+            setTodosResultados(resultadosData);
             
-            // Seleccionar el primer campeonato por defecto
-            if (campsData.length > 0) {
+            // Seleccionar el primer campeonato "En Curso" por defecto
+            const campeonatoEnCurso = campsData.find(c => c.Estado === 'En Curso');
+            if (campeonatoEnCurso) {
+                setCampeonatoSeleccionado(campeonatoEnCurso.id);
+                setCampeonatoPartidos(campeonatoEnCurso.id);
+                cargarPartidosPendientes(campeonatoEnCurso.id, fixturesData, partidosData, resultadosData, equiposData);
+            } else if (campsData.length > 0) {
                 setCampeonatoSeleccionado(campsData[0].id);
-            }
-
-            // Crear partidos pendientes de ejemplo (simulación)
-            if (campsData.length > 0 && equiposData.length >= 2) {
-                const partidosEjemplo = [
-                    {
-                        id: 'p1',
-                        equipoLocal: equiposData[0],
-                        equipoVisitante: equiposData[1],
-                        fecha: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                        campeonato: campsData[0],
-                        jornada: 10
-                    },
-                    {
-                        id: 'p2',
-                        equipoLocal: equiposData[2],
-                        equipoVisitante: equiposData[3],
-                        fecha: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                        campeonato: campsData[0],
-                        jornada: 10
-                    },
-                    {
-                        id: 'p3',
-                        equipoLocal: equiposData[4],
-                        equipoVisitante: equiposData[5],
-                        fecha: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                        campeonato: campsData[0],
-                        jornada: 11
-                    }
-                ];
-                setPartidosPendientes(partidosEjemplo);
+                setCampeonatoPartidos(campsData[0].id);
+                cargarPartidosPendientes(campsData[0].id, fixturesData, partidosData, resultadosData, equiposData);
             }
         } catch (error) {
             console.error('Error cargando datos:', error);
         }
         setLoading(false);
     };
+
+    const cargarPartidosPendientes = (campeonatoId, fixturesData, partidosData, resultadosData, equiposData) => {
+        console.log('=== Cargando partidos pendientes ===');
+        console.log('Campeonato ID:', campeonatoId);
+        console.log('Total fixtures:', fixturesData.length);
+        console.log('Total partidos:', partidosData.length);
+        console.log('Total resultados:', resultadosData.length);
+        
+        // Filtrar fixtures del campeonato seleccionado
+        const fixturesCampeonato = fixturesData.filter(f => f.IDCampeonato === campeonatoId);
+        console.log('Fixtures del campeonato:', fixturesCampeonato.length);
+        
+        // Obtener partidos de esos fixtures
+        const partidosCampeonato = partidosData.filter(p => 
+            fixturesCampeonato.some(f => f.id === p.IDFixture)
+        );
+        console.log('Partidos del campeonato:', partidosCampeonato.length);
+
+        // Filtrar solo partidos sin resultado (0-0)
+        const partidosPendientesData = partidosCampeonato
+            .filter(p => {
+                const resultado = resultadosData.find(r => r.id === p.IDResultado);
+                const esPendiente = resultado && resultado.Goles_Local === 0 && resultado.Goles_Visitante === 0;
+                return esPendiente;
+            })
+            .map(p => {
+                const fixture = fixturesCampeonato.find(f => f.id === p.IDFixture);
+                const equipoLocal = equiposData.find(e => e.id === p.IDEquipo_Local);
+                const equipoVisitante = equiposData.find(e => e.id === p.IDEquipo_Visitante);
+                const campeonatoActual = campeonatos.find(c => c.id === campeonatoId) || { Nombre: 'Campeonato' };
+                
+                return {
+                    id: p.id,
+                    equipoLocal: equipoLocal || { id: p.IDEquipo_Local, Nombre: 'Equipo Local' },
+                    equipoVisitante: equipoVisitante || { id: p.IDEquipo_Visitante, Nombre: 'Equipo Visitante' },
+                    fecha: fixture?.Fecha || new Date().toISOString().split('T')[0],
+                    jornada: fixture?.Numero || 1,
+                    campeonato: campeonatoActual
+                };
+            });
+
+        console.log('Partidos pendientes encontrados:', partidosPendientesData.length);
+        console.log('Partidos pendientes:', partidosPendientesData);
+        setPartidosSinFiltrar(partidosPendientesData);
+        setPartidosPendientes(partidosPendientesData);
+        setFiltroJornada('todas');
+        setFiltroEquipo('todos');
+    };
+
+    const aplicarFiltros = () => {
+        let partidosFiltrados = [...partidosSinFiltrar];
+
+        // Filtrar por jornada
+        if (filtroJornada !== 'todas') {
+            partidosFiltrados = partidosFiltrados.filter(p => p.jornada === parseInt(filtroJornada));
+        }
+
+        // Filtrar por equipo
+        if (filtroEquipo !== 'todos') {
+            const equipoId = parseInt(filtroEquipo);
+            partidosFiltrados = partidosFiltrados.filter(p => 
+                p.equipoLocal.id === equipoId || p.equipoVisitante.id === equipoId
+            );
+        }
+
+        setPartidosPendientes(partidosFiltrados);
+    };
+
+    useEffect(() => {
+        if (partidosSinFiltrar.length > 0) {
+            aplicarFiltros();
+        }
+    }, [filtroJornada, filtroEquipo]);
+
+    const handleCampeonatoPartidosChange = (e) => {
+        const campeonatoId = parseInt(e.target.value);
+        setCampeonatoPartidos(campeonatoId);
+        setFiltroJornada('todas');
+        setFiltroEquipo('todos');
+        cargarPartidosPendientes(campeonatoId, todosFixtures, todosPartidos, todosResultados, equipos);
+    };
+
+    // Obtener jornadas únicas del campeonato seleccionado
+    const jornadasDisponibles = [...new Set(partidosSinFiltrar.map(p => p.jornada))].sort((a, b) => a - b);
+
+    // Obtener equipos únicos del campeonato seleccionado
+    const equiposDisponibles = (() => {
+        const equiposSet = new Map();
+        partidosSinFiltrar.forEach(p => {
+            equiposSet.set(p.equipoLocal.id, p.equipoLocal);
+            equiposSet.set(p.equipoVisitante.id, p.equipoVisitante);
+        });
+        return Array.from(equiposSet.values()).sort((a, b) => a.Nombre.localeCompare(b.Nombre));
+    })();
 
     // Obtener campeonatos finalizados para el carrusel
     const featuredActivities = campeonatos
@@ -166,7 +252,7 @@ const Home = () => {
     };
 
     // Función para generar predicciones con IA
-    const generarPredicciones = async () => {
+    const predicciones_controllers = async () => {
         if (!campeonatoSeleccionado || loadingPrediccion) return;
         
         setLoadingPrediccion(true);
@@ -262,7 +348,7 @@ Genera SOLO un JSON válido (sin markdown, sin explicaciones adicionales) con la
     };
 
     // Función para predecir resultado de un partido
-    const predecirPartido = async (partido) => {
+    const prediccion_controllers = async (partido) => {
         setLoadingPartido(true);
         setPartidoEnAnalisis(partido.id);
         setPrediccionPartido(null);
@@ -940,7 +1026,7 @@ Genera un análisis detallado de máximo 150 palabras que incluya:
                         
                         {/* Botón para generar predicciones */}
                         <button
-                            onClick={generarPredicciones}
+                            onClick={predicciones_controllers}
                             disabled={loadingPrediccion || !campeonatoSeleccionado}
                             className={`inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 ${
                                 loadingPrediccion || !campeonatoSeleccionado
@@ -1067,14 +1153,107 @@ Genera un análisis detallado de máximo 150 palabras que incluya:
                                 <span className="text-2xl">📊</span>
                             </div>
                         </div>
-                        <p className="text-lg text-[#065F46] opacity-80">
+                        <p className="text-lg text-[#065F46] opacity-80 mb-6">
                             Predice el resultado de los próximos encuentros basándose en el historial de ambos equipos
                         </p>
+
+                        {/* Selector de Campeonato */}
+                        <div className="max-w-md mx-auto mb-8">
+                            <label className="block text-sm font-semibold text-[#065F46] mb-2">
+                                Selecciona un Campeonato
+                            </label>
+                            <select
+                                value={campeonatoPartidos || ''}
+                                onChange={handleCampeonatoPartidosChange}
+                                className="w-full px-4 py-3 border-2 border-blue-300 rounded-xl bg-blue-50 text-[#065F46] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition font-semibold"
+                            >
+                                <option value="">-- Selecciona un campeonato --</option>
+                                {campeonatos
+                                    .filter(camp => camp.Estado === 'En Curso' || camp.Estado === 'Planificado')
+                                    .map(camp => (
+                                        <option key={camp.id} value={camp.id}>
+                                            {camp.Nombre} ({camp.Estado})
+                                        </option>
+                                    ))
+                                }
+                            </select>
+                        </div>
+
+                        {/* Filtros por Jornada y Equipo */}
+                        {campeonatoPartidos && partidosSinFiltrar.length > 0 && (
+                            <div className="max-w-4xl mx-auto mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {/* Filtro por Jornada */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-[#065F46] mb-2">
+                                        Filtrar por Jornada
+                                    </label>
+                                    <select
+                                        value={filtroJornada}
+                                        onChange={(e) => setFiltroJornada(e.target.value)}
+                                        className="w-full px-4 py-3 border-2 border-cyan-300 rounded-xl bg-cyan-50 text-[#065F46] focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition font-semibold"
+                                    >
+                                        <option value="todas">Todas las Jornadas</option>
+                                        {jornadasDisponibles.map(jornada => (
+                                            <option key={jornada} value={jornada}>
+                                                Jornada {jornada}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                {/* Filtro por Equipo */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-[#065F46] mb-2">
+                                        Filtrar por Equipo
+                                    </label>
+                                    <select
+                                        value={filtroEquipo}
+                                        onChange={(e) => setFiltroEquipo(e.target.value)}
+                                        className="w-full px-4 py-3 border-2 border-cyan-300 rounded-xl bg-cyan-50 text-[#065F46] focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition font-semibold"
+                                    >
+                                        <option value="todos">Todos los Equipos</option>
+                                        {equiposDisponibles.map(equipo => (
+                                            <option key={equipo.id} value={equipo.id}>
+                                                {equipo.Nombre}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
+                    {/* Mensaje si no hay campeonato seleccionado */}
+                    {!campeonatoPartidos && (
+                        <div className="text-center py-12">
+                            <div className="inline-block bg-blue-50 rounded-full p-6 mb-4">
+                                <span className="text-6xl">🏆</span>
+                            </div>
+                            <p className="text-xl text-[#065F46] font-semibold">
+                                Selecciona un campeonato para ver los partidos pendientes
+                            </p>
+                        </div>
+                    )}
+
+                    {/* Mensaje si no hay partidos pendientes */}
+                    {campeonatoPartidos && partidosPendientes.length === 0 && (
+                        <div className="text-center py-12">
+                            <div className="inline-block bg-green-50 rounded-full p-6 mb-4">
+                                <span className="text-6xl">✅</span>
+                            </div>
+                            <p className="text-xl text-[#065F46] font-semibold">
+                                No hay partidos pendientes en este campeonato
+                            </p>
+                            <p className="text-gray-600 mt-2">
+                                Todos los partidos ya han sido jugados o aún no están programados
+                            </p>
+                        </div>
+                    )}
+
                     {/* Lista de partidos pendientes */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                        {partidosPendientes.map((partido) => (
+                    {campeonatoPartidos && partidosPendientes.length > 0 && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                            {partidosPendientes.map((partido) => (
                             <div key={partido.id} className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-6 border-2 border-blue-200 hover:border-blue-400 transition-all duration-300 hover:shadow-xl">
                                 <div className="text-center mb-4">
                                     <div className="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-bold mb-2">
@@ -1100,7 +1279,7 @@ Genera un análisis detallado de máximo 150 palabras que incluya:
                                 </div>
 
                                 <button
-                                    onClick={() => predecirPartido(partido)}
+                                    onClick={() => prediccion_controllers(partido)}
                                     disabled={loadingPartido}
                                     className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
@@ -1118,6 +1297,7 @@ Genera un análisis detallado de máximo 150 palabras que incluya:
                             </div>
                         ))}
                     </div>
+                    )}
 
                     {/* Resultado de la predicción */}
                     {prediccionPartido && !loadingPartido && (
