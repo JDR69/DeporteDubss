@@ -1,2 +1,4 @@
-id,correo_organizador,nombre_deporte,nombre,fecha_inicio,fecha_fin,estado
-1,laura.gomez.1002@email.com,Futbol 11,Liga Universitaria 2025,2025-03-01,2025-06-30,En Curso
+id,id_usuario,id_deporte,nombre,fecha_inicio,fecha_fin,estado
+1,1002,1,Liga Amateur Universitaria 2024,01/03/2024,15/06/2024,Finalizado
+2,1003,2,Torneo Universitario de Básquet 2024,05/04/2024,20/07/2024,Finalizado
+3,1004,3,Copa Universitaria de Voleibol 2024,10/05/2024,25/08/2024,Finalizado

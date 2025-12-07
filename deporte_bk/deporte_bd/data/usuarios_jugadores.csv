@@ -1,51 +1,441 @@
-Registro,Nombre,Apellido,Correo,Contrasena,Fecha_Nacimiento,Genero,Estado,Nombre_Equipo
-3001,Jugador1,Leones,j1.leones@email.com,12345,2000-01-01,M,1,Los Leones
-3002,Jugador2,Leones,j2.leones@email.com,12345,2000-01-02,M,1,Los Leones
-3003,Jugador3,Leones,j3.leones@email.com,12345,2000-01-03,M,1,Los Leones
-3004,Jugador4,Leones,j4.leones@email.com,12345,2000-01-04,M,1,Los Leones
-3005,Jugador5,Leones,j5.leones@email.com,12345,2000-01-05,M,1,Los Leones
-3006,Jugador1,Aguilas,j1.aguilas@email.com,12345,2000-02-01,F,1,Las Aguilas
-3007,Jugador2,Aguilas,j2.aguilas@email.com,12345,2000-02-02,F,1,Las Aguilas
-3008,Jugador3,Aguilas,j3.aguilas@email.com,12345,2000-02-03,F,1,Las Aguilas
-3009,Jugador4,Aguilas,j4.aguilas@email.com,12345,2000-02-04,F,1,Las Aguilas
-3010,Jugador5,Aguilas,j5.aguilas@email.com,12345,2000-02-05,F,1,Las Aguilas
-3011,Jugador1,Tigres,j1.tigres@email.com,12345,2000-03-01,M,1,Los Tigres
-3012,Jugador2,Tigres,j2.tigres@email.com,12345,2000-03-02,M,1,Los Tigres
-3013,Jugador3,Tigres,j3.tigres@email.com,12345,2000-03-03,M,1,Los Tigres
-3014,Jugador4,Tigres,j4.tigres@email.com,12345,2000-03-04,M,1,Los Tigres
-3015,Jugador5,Tigres,j5.tigres@email.com,12345,2000-03-05,M,1,Los Tigres
-3016,Jugador1,Panteras,j1.panteras@email.com,12345,2000-04-01,F,1,Las Panteras
-3017,Jugador2,Panteras,j2.panteras@email.com,12345,2000-04-02,F,1,Las Panteras
-3018,Jugador3,Panteras,j3.panteras@email.com,12345,2000-04-03,F,1,Las Panteras
-3019,Jugador4,Panteras,j4.panteras@email.com,12345,2000-04-04,F,1,Las Panteras
-3020,Jugador5,Panteras,j5.panteras@email.com,12345,2000-04-05,F,1,Las Panteras
-3021,Jugador1,Lobos,j1.lobos@email.com,12345,2000-05-01,M,1,Los Lobos
-3022,Jugador2,Lobos,j2.lobos@email.com,12345,2000-05-02,M,1,Los Lobos
-3023,Jugador3,Lobos,j3.lobos@email.com,12345,2000-05-03,M,1,Los Lobos
-3024,Jugador4,Lobos,j4.lobos@email.com,12345,2000-05-04,M,1,Los Lobos
-3025,Jugador5,Lobos,j5.lobos@email.com,12345,2000-05-05,M,1,Los Lobos
-3026,Jugador1,Cobras,j1.cobras@email.com,12345,2000-06-01,F,1,Las Cobras
-3027,Jugador2,Cobras,j2.cobras@email.com,12345,2000-06-02,F,1,Las Cobras
-3028,Jugador3,Cobras,j3.cobras@email.com,12345,2000-06-03,F,1,Las Cobras
-3029,Jugador4,Cobras,j4.cobras@email.com,12345,2000-06-04,F,1,Las Cobras
-3030,Jugador5,Cobras,j5.cobras@email.com,12345,2000-06-05,F,1,Las Cobras
-3031,Jugador1,Osos,j1.osos@email.com,12345,2000-07-01,M,1,Los Osos
-3032,Jugador2,Osos,j2.osos@email.com,12345,2000-07-02,M,1,Los Osos
-3033,Jugador3,Osos,j3.osos@email.com,12345,2000-07-03,M,1,Los Osos
-3034,Jugador4,Osos,j4.osos@email.com,12345,2000-07-04,M,1,Los Osos
-3035,Jugador5,Osos,j5.osos@email.com,12345,2000-07-05,M,1,Los Osos
-3036,Jugador1,Hienas,j1.hienas@email.com,12345,2000-08-01,F,1,Las Hienas
-3037,Jugador2,Hienas,j2.hienas@email.com,12345,2000-08-02,F,1,Las Hienas
-3038,Jugador3,Hienas,j3.hienas@email.com,12345,2000-08-03,F,1,Las Hienas
-3039,Jugador4,Hienas,j4.hienas@email.com,12345,2000-08-04,F,1,Las Hienas
-3040,Jugador5,Hienas,j5.hienas@email.com,12345,2000-08-05,F,1,Las Hienas
-3041,Jugador1,Tiburones,j1.tiburones@email.com,12345,2000-09-01,M,1,Los Tiburones
-3042,Jugador2,Tiburones,j2.tiburones@email.com,12345,2000-09-02,M,1,Los Tiburones
-3043,Jugador3,Tiburones,j3.tiburones@email.com,12345,2000-09-03,M,1,Los Tiburones
-3044,Jugador4,Tiburones,j4.tiburones@email.com,12345,2000-09-04,M,1,Los Tiburones
-3045,Jugador5,Tiburones,j5.tiburones@email.com,12345,2000-09-05,M,1,Los Tiburones
-3046,Jugador1,Orcas,j1.orcas@email.com,12345,2000-10-01,F,1,Las Orcas
-3047,Jugador2,Orcas,j2.orcas@email.com,12345,2000-10-02,F,1,Las Orcas
-3048,Jugador3,Orcas,j3.orcas@email.com,12345,2000-10-03,F,1,Las Orcas
-3049,Jugador4,Orcas,j4.orcas@email.com,12345,2000-10-04,F,1,Las Orcas
-3050,Jugador5,Orcas,j5.orcas@email.com,12345,2000-10-05,F,1,Las Orcas
+correo,id_equipo
+natalia.rojas.3001@email.com,1
+gabriela.reyes.3002@email.com,1
+cecilia.salazar.3003@email.com,1
+antonia.godoy.3004@email.com,1
+daniel.ramirez.3005@email.com,1
+roberto.morales.3006@email.com,1
+pedro.ramirez.3007@email.com,1
+renata.martinez.3008@email.com,1
+silvia.cid.3009@email.com,1
+paula.lopez.3010@email.com,1
+elena.diaz.3011@email.com,1
+valeria.pizarro.3012@email.com,1
+silvia.rojas.3013@email.com,1
+emilia.navarro.3014@email.com,1
+javier.leiva.3015@email.com,1
+javier.vargas.3016@email.com,1
+emilia.fuentes.3017@email.com,1
+tomas.quiroga.3018@email.com,1
+felipe.morales.3019@email.com,2
+miguel.castro.3020@email.com,2
+valeria.vidal.3021@email.com,2
+martina.soto.3022@email.com,2
+ricardo.parra.3023@email.com,2
+carolina.salazar.3024@email.com,2
+adriana.leiva.3025@email.com,2
+macarena.nunez.3026@email.com,2
+vicente.parra.3027@email.com,2
+francisco.salazar.3028@email.com,2
+valentina.morales.3029@email.com,2
+esteban.morales.3030@email.com,2
+sofia.silva.3031@email.com,2
+andres.cid.3032@email.com,2
+valentina.reyes.3033@email.com,2
+victoria.vega.3034@email.com,2
+carolina.guerra.3035@email.com,2
+joaquin.martinez.3036@email.com,2
+sofia.flores.3037@email.com,3
+luis.fuentes.3038@email.com,3
+sebastian.soto.3039@email.com,3
+raul.guzman.3040@email.com,3
+joaquin.tapia.3041@email.com,3
+paula.navarro.3042@email.com,3
+cecilia.guzman.3043@email.com,3
+paula.arias.3044@email.com,3
+renata.ramirez.3045@email.com,3
+cecilia.morales.3046@email.com,3
+daniel.herrera.3047@email.com,3
+sergio.nunez.3048@email.com,3
+benjamin.nunez.3049@email.com,3
+natalia.paz.3050@email.com,3
+maximiliano.sepulveda.3051@email.com,3
+roberto.rivera.3052@email.com,3
+francisco.torres.3053@email.com,3
+natalia.cid.3054@email.com,3
+martina.ortega.3055@email.com,4
+javiera.rojas.3056@email.com,4
+alejandro.vega.3057@email.com,4
+victoria.ramos.3058@email.com,4
+valentina.parra.3059@email.com,4
+sergio.martinez.3060@email.com,4
+andres.arias.3061@email.com,4
+carolina.leiva.3062@email.com,4
+antonia.campos.3063@email.com,4
+daniel.vidal.3064@email.com,4
+ignacio.castro.3065@email.com,4
+david.vega.3066@email.com,4
+ricardo.cid.3067@email.com,4
+sofia.rojas.3068@email.com,4
+elena.guerra.3069@email.com,4
+matias.castro.3070@email.com,4
+guillermo.acosta.3071@email.com,4
+renata.ramos.3072@email.com,4
+paula.vega.3073@email.com,5
+victoria.mendoza.3074@email.com,5
+emilia.velasquez.3075@email.com,5
+isabella.salinas.3076@email.com,5
+tomas.cid.3077@email.com,5
+emilia.flores.3078@email.com,5
+sergio.paz.3079@email.com,5
+valeria.vargas.3080@email.com,5
+natalia.paz.3081@email.com,5
+antonia.torres.3082@email.com,5
+tomas.torres.3083@email.com,5
+natalia.ramirez.3084@email.com,5
+antonia.pizarro.3085@email.com,5
+juan.tapia.3086@email.com,5
+javier.mendoza.3087@email.com,5
+fernanda.martinez.3088@email.com,5
+elena.quiroga.3089@email.com,5
+raul.morales.3090@email.com,5
+javiera.vega.3091@email.com,6
+matias.silva.3092@email.com,6
+camila.morales.3093@email.com,6
+carolina.quiroga.3094@email.com,6
+renata.sepulveda.3095@email.com,6
+silvia.vega.3096@email.com,6
+matias.perez.3097@email.com,6
+luis.cid.3098@email.com,6
+guillermo.nunez.3099@email.com,6
+juan.vargas.3100@email.com,6
+valeria.nunez.3101@email.com,6
+matias.morales.3102@email.com,6
+gabriel.guerra.3103@email.com,6
+antonia.guerra.3104@email.com,6
+gabriela.guerra.3105@email.com,6
+alejandro.nunez.3106@email.com,6
+florencia.leiva.3107@email.com,6
+florencia.pizarro.3108@email.com,6
+martina.vargas.3109@email.com,7
+josefa.reyes.3110@email.com,7
+sergio.acosta.3111@email.com,7
+josefa.leiva.3112@email.com,7
+florencia.ramirez.3113@email.com,7
+ricardo.martinez.3114@email.com,7
+carolina.tapia.3115@email.com,7
+andres.diaz.3116@email.com,7
+david.ortega.3117@email.com,7
+valeria.mendoza.3118@email.com,7
+miguel.silva.3119@email.com,7
+miguel.ramirez.3120@email.com,7
+florencia.reyes.3121@email.com,7
+victoria.godoy.3122@email.com,7
+antonia.parra.3123@email.com,7
+joaquin.herrera.3124@email.com,7
+renata.guzman.3125@email.com,7
+carlos.soto.3126@email.com,7
+vicente.cid.3127@email.com,8
+andrea.silva.3128@email.com,8
+catalina.rivera.3129@email.com,8
+tomas.salinas.3130@email.com,8
+sergio.flores.3131@email.com,8
+macarena.araya.3132@email.com,8
+sergio.rivera.3133@email.com,8
+sergio.godoy.3134@email.com,8
+francisco.reyes.3135@email.com,8
+valeria.araya.3136@email.com,8
+silvia.rivera.3137@email.com,8
+daniel.rivera.3138@email.com,8
+pedro.salinas.3139@email.com,8
+elena.morales.3140@email.com,8
+javier.quiroga.3141@email.com,8
+emilia.araya.3142@email.com,8
+francisco.morales.3143@email.com,8
+ignacio.araya.3144@email.com,8
+camila.salinas.3145@email.com,9
+macarena.vargas.3146@email.com,9
+daniel.guzman.3147@email.com,9
+sergio.velasquez.3148@email.com,9
+daniel.vidal.3149@email.com,9
+carolina.lopez.3150@email.com,9
+mariana.campos.3151@email.com,9
+gabriela.mendoza.3152@email.com,9
+macarena.sanchez.3153@email.com,9
+ricardo.navarro.3154@email.com,9
+joaquin.rivera.3155@email.com,9
+valeria.rojas.3156@email.com,9
+sofia.cordova.3157@email.com,9
+matias.morales.3158@email.com,9
+tomas.flores.3159@email.com,9
+cecilia.rivera.3160@email.com,9
+ricardo.leiva.3161@email.com,9
+gabriel.rivera.3162@email.com,9
+joaquin.diaz.3163@email.com,10
+sergio.nunez.3164@email.com,10
+martina.rojas.3165@email.com,10
+ignacio.ramos.3166@email.com,10
+catalina.castro.3167@email.com,10
+andrea.vidal.3168@email.com,10
+matias.cabrera.3169@email.com,10
+esteban.nunez.3170@email.com,10
+david.campos.3171@email.com,10
+emilia.sepulveda.3172@email.com,10
+antonia.rojas.3173@email.com,10
+paula.bravo.3174@email.com,10
+martina.lopez.3175@email.com,10
+roberto.cid.3176@email.com,10
+francisco.cid.3177@email.com,10
+fernanda.campos.3178@email.com,10
+david.ramos.3179@email.com,10
+matias.bravo.3180@email.com,10
+raul.arias.3181@email.com,11
+carlos.guerra.3182@email.com,11
+renata.campos.3183@email.com,11
+sebastian.cid.3184@email.com,11
+cecilia.nunez.3185@email.com,11
+cecilia.diaz.3186@email.com,11
+tomas.leiva.3187@email.com,11
+andres.rivera.3188@email.com,11
+esteban.godoy.3189@email.com,11
+alejandro.zuniga.3190@email.com,11
+alejandro.perez.3191@email.com,11
+guillermo.paz.3192@email.com,11
+francisco.castro.3193@email.com,12
+tomas.paz.3194@email.com,12
+josefa.araya.3195@email.com,12
+lucia.diaz.3196@email.com,12
+david.pizarro.3197@email.com,12
+fernanda.rivera.3198@email.com,12
+catalina.ramos.3199@email.com,12
+antonia.salazar.3200@email.com,12
+javier.flores.3201@email.com,12
+daniel.miranda.3202@email.com,12
+daniela.fuentes.3203@email.com,12
+antonia.paz.3204@email.com,12
+javiera.campos.3205@email.com,13
+tomas.morales.3206@email.com,13
+elena.guzman.3207@email.com,13
+valeria.diaz.3208@email.com,13
+renata.quiroga.3209@email.com,13
+sergio.diaz.3210@email.com,13
+felipe.vega.3211@email.com,13
+ignacio.pizarro.3212@email.com,13
+miguel.parra.3213@email.com,13
+carolina.reyes.3214@email.com,13
+sofia.araya.3215@email.com,13
+josefa.sepulveda.3216@email.com,13
+mariana.ramirez.3217@email.com,14
+antonia.leiva.3218@email.com,14
+raul.leiva.3219@email.com,14
+vicente.araya.3220@email.com,14
+benjamin.mendoza.3221@email.com,14
+alejandro.bravo.3222@email.com,14
+macarena.zuniga.3223@email.com,14
+mariana.arias.3224@email.com,14
+gabriela.araya.3225@email.com,14
+roberto.ortega.3226@email.com,14
+elena.guzman.3227@email.com,14
+raul.silva.3228@email.com,14
+valentina.zuniga.3229@email.com,15
+miguel.vega.3230@email.com,15
+david.diaz.3231@email.com,15
+ricardo.rivera.3232@email.com,15
+ignacio.herrera.3233@email.com,15
+matias.salinas.3234@email.com,15
+renata.paz.3235@email.com,15
+javier.ramos.3236@email.com,15
+elena.parra.3237@email.com,15
+valeria.salazar.3238@email.com,15
+sergio.lopez.3239@email.com,15
+camila.bravo.3240@email.com,15
+felipe.silva.3241@email.com,16
+javiera.pizarro.3242@email.com,16
+felipe.diaz.3243@email.com,16
+pedro.guerra.3244@email.com,16
+roberto.cid.3245@email.com,16
+diego.velasquez.3246@email.com,16
+adriana.acosta.3247@email.com,16
+daniel.miranda.3248@email.com,16
+valentina.soto.3249@email.com,16
+ignacio.paz.3250@email.com,16
+sergio.salazar.3251@email.com,16
+antonia.castro.3252@email.com,16
+paula.salazar.3253@email.com,17
+gabriel.arias.3254@email.com,17
+antonia.reyes.3255@email.com,17
+matias.fuentes.3256@email.com,17
+adriana.ramirez.3257@email.com,17
+carlos.castro.3258@email.com,17
+natalia.soto.3259@email.com,17
+macarena.salazar.3260@email.com,17
+alejandro.ramirez.3261@email.com,17
+emilia.acosta.3262@email.com,17
+miguel.leiva.3263@email.com,17
+catalina.reyes.3264@email.com,17
+carlos.godoy.3265@email.com,18
+felipe.salazar.3266@email.com,18
+catalina.ramos.3267@email.com,18
+luis.navarro.3268@email.com,18
+andrea.acosta.3269@email.com,18
+victoria.castro.3270@email.com,18
+vicente.parra.3271@email.com,18
+martin.ramirez.3272@email.com,18
+isabella.godoy.3273@email.com,18
+roberto.vidal.3274@email.com,18
+emilia.navarro.3275@email.com,18
+catalina.fuentes.3276@email.com,18
+ricardo.godoy.3277@email.com,19
+ricardo.paz.3278@email.com,19
+gabriel.navarro.3279@email.com,19
+macarena.miranda.3280@email.com,19
+martin.pizarro.3281@email.com,19
+lucia.pizarro.3282@email.com,19
+roberto.torres.3283@email.com,19
+silvia.acosta.3284@email.com,19
+tomas.reyes.3285@email.com,19
+florencia.bravo.3286@email.com,19
+ricardo.godoy.3287@email.com,19
+alberto.godoy.3288@email.com,19
+roberto.zuniga.3289@email.com,20
+emilia.parra.3290@email.com,20
+valeria.perez.3291@email.com,20
+natalia.paz.3292@email.com,20
+adriana.quiroga.3293@email.com,20
+benjamin.miranda.3294@email.com,20
+sebastian.vidal.3295@email.com,20
+roberto.guzman.3296@email.com,20
+martina.velasquez.3297@email.com,20
+elena.ramirez.3298@email.com,20
+guillermo.nunez.3299@email.com,20
+sofia.fuentes.3300@email.com,20
+juan.mendoza.3301@email.com,21
+ricardo.bravo.3302@email.com,21
+josefa.mendoza.3303@email.com,21
+natalia.miranda.3304@email.com,21
+guillermo.leiva.3305@email.com,21
+david.guzman.3306@email.com,21
+sofia.pizarro.3307@email.com,21
+alejandro.leiva.3308@email.com,21
+miguel.vega.3309@email.com,21
+javier.quiroga.3310@email.com,21
+gabriela.zuniga.3311@email.com,21
+guillermo.fuentes.3312@email.com,21
+andres.rojas.3313@email.com,21
+daniel.acosta.3314@email.com,21
+raul.godoy.3315@email.com,22
+javiera.arias.3316@email.com,22
+raul.reyes.3317@email.com,22
+florencia.vidal.3318@email.com,22
+javier.arias.3319@email.com,22
+camila.perez.3320@email.com,22
+sofia.soto.3321@email.com,22
+valeria.araya.3322@email.com,22
+andrea.sepulveda.3323@email.com,22
+florencia.rivera.3324@email.com,22
+martina.leiva.3325@email.com,22
+josefa.flores.3326@email.com,22
+carlos.araya.3327@email.com,22
+esteban.morales.3328@email.com,22
+macarena.cid.3329@email.com,23
+sofia.velasquez.3330@email.com,23
+antonia.miranda.3331@email.com,23
+gabriela.flores.3332@email.com,23
+martina.vidal.3333@email.com,23
+javiera.vargas.3334@email.com,23
+ignacio.guerra.3335@email.com,23
+gabriel.martinez.3336@email.com,23
+lucia.salinas.3337@email.com,23
+martina.campos.3338@email.com,23
+paula.fuentes.3339@email.com,23
+silvia.cid.3340@email.com,23
+juan.cabrera.3341@email.com,23
+florencia.leiva.3342@email.com,23
+roberto.rivera.3343@email.com,24
+valeria.castro.3344@email.com,24
+sebastian.campos.3345@email.com,24
+joaquin.cabrera.3346@email.com,24
+valeria.miranda.3347@email.com,24
+ricardo.castro.3348@email.com,24
+ignacio.godoy.3349@email.com,24
+raul.castro.3350@email.com,24
+diego.parra.3351@email.com,24
+roberto.paz.3352@email.com,24
+benjamin.bravo.3353@email.com,24
+felipe.acosta.3354@email.com,24
+carolina.flores.3355@email.com,24
+luis.guerra.3356@email.com,24
+andres.arias.3357@email.com,25
+valeria.salinas.3358@email.com,25
+miguel.pizarro.3359@email.com,25
+sergio.araya.3360@email.com,25
+emilia.bravo.3361@email.com,25
+carlos.salazar.3362@email.com,25
+victoria.soto.3363@email.com,25
+martina.cordova.3364@email.com,25
+alejandro.guzman.3365@email.com,25
+guillermo.pizarro.3366@email.com,25
+alberto.sanchez.3367@email.com,25
+gabriela.torres.3368@email.com,25
+maximiliano.zuniga.3369@email.com,25
+javier.lopez.3370@email.com,25
+ricardo.zuniga.3371@email.com,26
+valeria.castro.3372@email.com,26
+daniel.bravo.3373@email.com,26
+lucia.guerra.3374@email.com,26
+mariana.morales.3375@email.com,26
+fernanda.vargas.3376@email.com,26
+alejandro.guerra.3377@email.com,26
+sergio.sepulveda.3378@email.com,26
+fernanda.guerra.3379@email.com,26
+maximiliano.velasquez.3380@email.com,26
+matias.arias.3381@email.com,26
+florencia.castro.3382@email.com,26
+andrea.velasquez.3383@email.com,26
+camila.guerra.3384@email.com,26
+daniel.vidal.3385@email.com,27
+victoria.sepulveda.3386@email.com,27
+josefa.vargas.3387@email.com,27
+macarena.velasquez.3388@email.com,27
+carlos.ortega.3389@email.com,27
+ignacio.rivera.3390@email.com,27
+carolina.cid.3391@email.com,27
+paula.quiroga.3392@email.com,27
+martina.rivera.3393@email.com,27
+pedro.salinas.3394@email.com,27
+sebastian.cordova.3395@email.com,27
+javiera.perez.3396@email.com,27
+catalina.miranda.3397@email.com,27
+florencia.cordova.3398@email.com,27
+daniel.araya.3399@email.com,28
+pedro.bravo.3400@email.com,28
+gabriela.mendoza.3401@email.com,28
+joaquin.salazar.3402@email.com,28
+miguel.vargas.3403@email.com,28
+juan.paz.3404@email.com,28
+macarena.salazar.3405@email.com,28
+valeria.vega.3406@email.com,28
+roberto.flores.3407@email.com,28
+josefa.vega.3408@email.com,28
+felipe.ramos.3409@email.com,28
+carolina.cid.3410@email.com,28
+luis.rivera.3411@email.com,28
+gabriel.guerra.3412@email.com,28
+josefa.sepulveda.3413@email.com,29
+ignacio.cabrera.3414@email.com,29
+victoria.guzman.3415@email.com,29
+matias.bravo.3416@email.com,29
+paula.morales.3417@email.com,29
+raul.ramos.3418@email.com,29
+miguel.bravo.3419@email.com,29
+francisco.herrera.3420@email.com,29
+martina.nunez.3421@email.com,29
+antonia.guzman.3422@email.com,29
+gabriela.reyes.3423@email.com,29
+tomas.acosta.3424@email.com,29
+sofia.zuniga.3425@email.com,29
+pedro.parra.3426@email.com,29
+adriana.cid.3427@email.com,30
+isabella.martinez.3428@email.com,30
+vicente.tapia.3429@email.com,30
+paula.pizarro.3430@email.com,30
+esteban.quiroga.3431@email.com,30
+fernanda.quiroga.3432@email.com,30
+silvia.sanchez.3433@email.com,30
+sofia.guzman.3434@email.com,30
+andrea.navarro.3435@email.com,30
+roberto.herrera.3436@email.com,30
+daniel.ramirez.3437@email.com,30
+sofia.araya.3438@email.com,30
+macarena.lopez.3439@email.com,30
+ignacio.araya.3440@email.com,30

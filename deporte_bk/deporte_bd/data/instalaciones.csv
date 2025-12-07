@@ -1,4 +1,7 @@
 id,nombre,ubicacion,estado
-1,Estadio Universitario,Campus Central,1
-2,Coliseo Polideportivo,Modulo 214,1
-3,Cancha de Pasto Sintetico,Area Deportiva,1
+1,Estadio Universitario Central,Campus Norte - Zona A,1
+2,Cancha de Fútbol Auxiliar,Campus Norte - Zona B,1
+3,Coliseo de Baloncesto Principal,Campus Sur - Edificio Deportivo,1
+4,Cancha de Baloncesto Techada,Campus Este - Gimnasio,1
+5,Cancha de Voleibol Indoor,Campus Sur - Polideportivo,1
+6,Cancha de Voleibol Exterior,Campus Oeste - Área Recreativa,1

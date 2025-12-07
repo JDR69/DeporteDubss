@@ -12,10 +12,16 @@ function CalendarioPage() {
   const [filtroTipo, setFiltroTipo] = useState('todos'); // todos, activos, finalizados, pendientes
   const [filtroDeporte, setFiltroDeporte] = useState('todos');
   const [vistaCalendario, setVistaCalendario] = useState('lista'); // lista, calendario
+  const [jornadaActual, setJornadaActual] = useState(0);
 
   useEffect(() => {
     cargarCampeonatos();
   }, []);
+
+  useEffect(() => {
+    // Resetear la jornada cuando cambia el campeonato
+    setJornadaActual(0);
+  }, [campeonatoSeleccionado]);
 
   const cargarCampeonatos = async () => {
     setLoading(true);
@@ -55,9 +61,10 @@ function CalendarioPage() {
 
     // Filtrar por deporte
     if (filtroDeporte !== 'todos') {
-      filtrados = filtrados.filter(c => 
-        c.IDDeporte?.Nombre === filtroDeporte || c.IDDeporte === filtroDeporte
-      );
+      filtrados = filtrados.filter(c => {
+        const deporteNombre = c.IDDeporte?.Nombre || c.IDDeporte;
+        return deporteNombre === filtroDeporte;
+      });
     }
 
     return filtrados;
@@ -66,10 +73,12 @@ function CalendarioPage() {
   const obtenerDeportes = () => {
     const deportes = new Set();
     campeonatos.forEach(c => {
-      const deporte = c.IDDeporte?.Nombre || c.IDDeporte;
-      if (deporte) deportes.add(deporte);
+      const deporte = c.IDDeporte?.Nombre;
+      if (deporte && typeof deporte === 'string') {
+        deportes.add(deporte);
+      }
     });
-    return Array.from(deportes);
+    return Array.from(deportes).sort();
   };
 
   const obtenerFechasJuego = () => {
@@ -96,22 +105,27 @@ function CalendarioPage() {
   const fechasJuego = obtenerFechasJuego();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-8 px-4">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-50 py-8 px-4">
+      <style>{`
+        button:focus {
+          outline: none !important;
+        }
+        button:focus-visible {
+          outline: none !important;
+        }
+      `}</style>
       <Loading show={loading} />
       
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-indigo-900 mb-2">📅 Calendario de Campeonatos</h1>
-          <p className="text-indigo-700">Consulta fechas y partidos de los campeonatos</p>
+          <h1 className="text-4xl font-bold text-indigo-900 mb-3">Calendario de Campeonatos</h1>
+          <p className="text-lg text-indigo-600">Consulta fechas y partidos de los campeonatos</p>
         </div>
 
         {/* Filtros */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border-2 border-indigo-200">
-          <div className="flex items-center gap-3 mb-4">
-            <span className="text-2xl">🔍</span>
-            <h2 className="text-xl font-bold text-indigo-900">Filtros</h2>
-          </div>
+          <h2 className="text-xl font-bold text-indigo-900 mb-5 pb-3 border-b-2 border-indigo-100">Filtros de Búsqueda</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
@@ -166,47 +180,60 @@ function CalendarioPage() {
           {/* Panel de Campeonatos */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl shadow-lg p-6 border-2 border-indigo-200 sticky top-4">
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-2xl">🏆</span>
+              <div className="flex items-center justify-between mb-5 pb-3 border-b-2 border-indigo-100">
                 <h2 className="text-xl font-bold text-indigo-900">Campeonatos</h2>
-                <span className="ml-auto bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-semibold">
+                <span className="bg-indigo-500 text-white px-4 py-1 rounded-full text-sm font-bold">
                   {campeonatosFiltrados.length}
                 </span>
               </div>
 
               <div className="space-y-3 max-h-[600px] overflow-y-auto">
                 {campeonatosFiltrados.length === 0 ? (
-                  <div className="text-center py-8">
-                    <div className="text-6xl mb-3">📭</div>
-                    <p className="text-gray-500">No hay campeonatos</p>
+                  <div className="text-center py-12 px-4">
+                    <div className="text-2xl font-bold text-gray-400 mb-2">Sin resultados</div>
+                    <p className="text-gray-500">No se encontraron campeonatos con los filtros seleccionados</p>
                   </div>
                 ) : (
                   campeonatosFiltrados.map(camp => (
                     <button
                       key={camp.id}
                       onClick={() => solicitarCalendario(camp.id)}
-                      className={`w-full text-left p-4 rounded-xl border-2 transition ${
+                      className={`w-full text-left p-4 rounded-xl transition-all duration-200 focus:outline-none ${
                         campeonatoSeleccionado === camp.id
-                          ? 'border-indigo-500 bg-indigo-50 shadow-md'
-                          : 'border-indigo-200 bg-white hover:bg-indigo-50'
+                          ? 'bg-linear-to-r from-indigo-500 to-blue-500 shadow-xl border-2 border-indigo-600'
+                          : 'bg-white border-2 border-indigo-200 hover:bg-indigo-50 hover:border-indigo-400 hover:shadow-md hover:scale-[1.02]'
                       }`}
                     >
                       <div className="flex items-center gap-3">
                         {camp.Logo ? (
-                          <img src={camp.Logo} alt={camp.Nombre} className="w-12 h-12 rounded-lg object-cover" />
+                          <img src={camp.Logo} alt={camp.Nombre} className="w-12 h-12 rounded-lg object-cover shadow-sm" />
                         ) : (
-                          <div className="w-12 h-12 bg-gradient-to-br from-indigo-200 to-blue-200 rounded-lg flex items-center justify-center text-indigo-700 font-bold">
+                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center font-bold text-lg shadow-sm ${
+                            campeonatoSeleccionado === camp.id
+                              ? 'bg-white/30 text-white'
+                              : 'bg-linear-to-r from-indigo-200 to-blue-200 text-indigo-700'
+                          }`}>
                             {camp.Nombre?.charAt(0)?.toUpperCase()}
                           </div>
                         )}
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-indigo-900 truncate">{camp.Nombre}</h3>
-                          <p className="text-xs text-indigo-600">{camp.IDDeporte?.Nombre || camp.IDDeporte}</p>
-                          <div className="flex gap-2 mt-1">
-                            <span className={`text-xs px-2 py-0.5 rounded-full ${
-                              camp.Estado === 'En Curso' ? 'bg-green-100 text-green-700' :
-                              camp.Estado === 'Finalizado' ? 'bg-gray-100 text-gray-700' :
-                              'bg-yellow-100 text-yellow-700'
+                          <h3 className={`font-bold truncate ${
+                            campeonatoSeleccionado === camp.id ? 'text-white' : 'text-indigo-900'
+                          }`}>
+                            {camp.Nombre}
+                          </h3>
+                          <p className={`text-xs ${
+                            campeonatoSeleccionado === camp.id ? 'text-white/90' : 'text-indigo-600'
+                          }`}>
+                            {camp.IDDeporte?.Nombre || camp.IDDeporte}
+                          </p>
+                          <div className="flex gap-2 mt-2">
+                            <span className={`text-xs px-3 py-1 rounded-full font-semibold ${
+                              campeonatoSeleccionado === camp.id
+                                ? 'bg-white/30 text-white'
+                                : camp.Estado === 'En Curso' ? 'bg-green-100 text-green-700 border border-green-300' :
+                                  camp.Estado === 'Finalizado' ? 'bg-gray-100 text-gray-700 border border-gray-300' :
+                                  'bg-yellow-100 text-yellow-700 border border-yellow-300'
                             }`}>
                               {camp.Estado}
                             </span>
@@ -223,15 +250,30 @@ function CalendarioPage() {
           {/* Panel de Calendario */}
           <div className="lg:col-span-2">
             {!detalleCampeonato ? (
-              <div className="bg-white rounded-2xl shadow-lg p-12 border-2 border-indigo-200 text-center">
-                <div className="text-8xl mb-4">📆</div>
-                <h3 className="text-2xl font-bold text-indigo-900 mb-2">Selecciona un Campeonato</h3>
-                <p className="text-indigo-600">Elige un campeonato de la lista para ver su calendario y partidos</p>
+              <div className="bg-white rounded-2xl shadow-lg border-2 border-indigo-200 overflow-hidden">
+                <div className="p-12 text-center">
+                  <div className="max-w-lg mx-auto">
+                    <div className="relative w-32 h-32 mx-auto mb-8">
+                      <div className="absolute inset-0 bg-gradient-to-br from-indigo-400 to-blue-500 rounded-2xl opacity-20 animate-pulse"></div>
+                      <div className="absolute inset-4 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-2xl opacity-40 transform rotate-45"></div>
+                      <div className="absolute inset-8 bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl"></div>
+                    </div>
+                    <h3 className="text-3xl font-bold text-indigo-900 mb-4">Selecciona un Campeonato</h3>
+                    <p className="text-lg text-indigo-700 leading-relaxed mb-8">
+                      Elige un campeonato de la lista para visualizar su calendario completo, jornadas y todos los partidos programados
+                    </p>
+                    <div className="flex items-center justify-center gap-3 px-6 py-3 bg-indigo-50 border-2 border-indigo-200 rounded-xl text-indigo-700 font-semibold">
+                      <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce"></div>
+                      <span>Selecciona un campeonato de la lista</span>
+                      <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                    </div>
+                  </div>
+                </div>
               </div>
             ) : (
               <div className="space-y-6">
                 {/* Info del Campeonato */}
-                <div className="bg-gradient-to-r from-indigo-500 to-blue-500 rounded-2xl shadow-lg p-6 text-white">
+                <div className="bg-linear-to-r from-indigo-500 to-blue-500 rounded-2xl shadow-lg p-6 text-white">
                   <div className="flex items-center gap-4">
                     {detalleCampeonato.Logo ? (
                       <img src={detalleCampeonato.Logo} alt={detalleCampeonato.Nombre} className="w-16 h-16 rounded-xl" />
@@ -241,11 +283,17 @@ function CalendarioPage() {
                       </div>
                     )}
                     <div className="flex-1">
-                      <h2 className="text-2xl font-bold">{detalleCampeonato.Nombre}</h2>
-                      <div className="flex gap-4 mt-2 text-sm">
-                        <span>⚽ {detalleCampeonato.Deporte?.Nombre}</span>
-                        <span>🏅 {detalleCampeonato.Categoria?.Nombre}</span>
-                        <span>📅 {detalleCampeonato.Fecha_Inicio} - {detalleCampeonato.Fecha_Fin}</span>
+                      <h2 className="text-2xl font-bold mb-3">{detalleCampeonato.Nombre}</h2>
+                      <div className="flex flex-wrap gap-3 text-sm">
+                        <span className="bg-white/20 px-3 py-1 rounded-lg font-semibold">
+                          Deporte: {detalleCampeonato.Deporte?.Nombre}
+                        </span>
+                        <span className="bg-white/20 px-3 py-1 rounded-lg font-semibold">
+                          Categoría: {detalleCampeonato.Categoria?.Nombre}
+                        </span>
+                        <span className="bg-white/20 px-3 py-1 rounded-lg font-semibold">
+                          {detalleCampeonato.Fecha_Inicio} - {detalleCampeonato.Fecha_Fin}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -253,39 +301,64 @@ function CalendarioPage() {
 
                 {/* Calendario de Partidos */}
                 <div className="bg-white rounded-2xl shadow-lg p-6 border-2 border-indigo-200">
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className="text-2xl">📋</span>
-                    <h3 className="text-xl font-bold text-indigo-900">Obtener Fechas/Juego</h3>
-                    <span className="ml-auto bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-semibold">
-                      {detalleCampeonato.Partidos?.length || 0} partidos
-                    </span>
+                  <div className="mb-6">
+                    <h3 className="text-xl font-bold text-indigo-900 mb-4">Calendario de Jornadas</h3>
+                    <div className="flex items-center gap-4">
+                      <button
+                        onClick={() => setJornadaActual(Math.max(0, jornadaActual - 1))}
+                        disabled={jornadaActual === 0}
+                        className={`flex-1 px-6 py-3 rounded-xl font-semibold transition-all duration-200 focus:outline-none ${
+                          jornadaActual === 0
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            : 'bg-indigo-500 text-white hover:bg-indigo-600 hover:shadow-lg transform hover:scale-105 active:scale-95'
+                        }`}
+                      >
+                        ← Jornada Anterior
+                      </button>
+                      <div className="px-6 py-3 bg-linear-to-r from-indigo-500 to-blue-500 text-white rounded-xl font-bold text-center shadow-md min-w-[200px]">
+                        <div className="text-sm opacity-90">Jornada</div>
+                        <div className="text-2xl">{jornadaActual + 1} / {fechasJuego.length}</div>
+                      </div>
+                      <button
+                        onClick={() => setJornadaActual(Math.min(fechasJuego.length - 1, jornadaActual + 1))}
+                        disabled={jornadaActual >= fechasJuego.length - 1}
+                        className={`flex-1 px-6 py-3 rounded-xl font-semibold transition-all duration-200 focus:outline-none ${
+                          jornadaActual >= fechasJuego.length - 1
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            : 'bg-indigo-500 text-white hover:bg-indigo-600 hover:shadow-lg transform hover:scale-105 active:scale-95'
+                        }`}
+                      >
+                        Siguiente Jornada →
+                      </button>
+                    </div>
                   </div>
 
                   {fechasJuego.length === 0 ? (
                     <div className="text-center py-12">
-                      <div className="text-6xl mb-3">⚽</div>
-                      <p className="text-gray-500 font-medium">No hay partidos programados</p>
+                      <div className="w-20 h-20 bg-gray-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                        <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+                      </div>
+                      <p className="text-xl font-semibold text-gray-400 mb-2">Sin partidos programados</p>
+                      <p className="text-gray-500">Este campeonato aún no tiene partidos registrados</p>
                     </div>
                   ) : (
                     <div className="space-y-6">
-                      {fechasJuego.map(([fecha, partidos]) => (
+                      {fechasJuego.slice(jornadaActual, jornadaActual + 1).map(([fecha, partidos]) => (
                         <div key={fecha}>
-                          <div className="flex items-center gap-2 mb-3">
-                            <div className="flex-1 h-px bg-indigo-200"></div>
-                            <span className="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg font-semibold text-sm">
-                              📆 {fecha === 'Sin fecha' ? fecha : new Date(fecha).toLocaleDateString('es-ES', { 
+                          <div className="bg-linear-to-r from-indigo-500 to-blue-500 rounded-xl p-4 mb-4 text-center">
+                            <div className="text-white font-bold text-lg">
+                              {fecha === 'Sin fecha' ? 'Fecha por confirmar' : new Date(fecha).toLocaleDateString('es-ES', { 
                                 weekday: 'long', 
                                 year: 'numeric', 
                                 month: 'long', 
                                 day: 'numeric' 
                               })}
-                            </span>
-                            <div className="flex-1 h-px bg-indigo-200"></div>
+                            </div>
                           </div>
 
-                          <div className="grid gap-3">
+                          <div className="grid gap-4">
                             {partidos.map(partido => (
-                              <div key={partido.id} className="p-4 border-2 border-indigo-100 rounded-xl bg-gradient-to-r from-white to-indigo-50 hover:shadow-md transition">
+                              <div key={partido.id} className="p-5 border-2 border-indigo-100 rounded-xl bg-white hover:border-indigo-300 hover:shadow-xl transition-all duration-200 transform hover:scale-[1.01]">
                                 <div className="flex items-center justify-between">
                                   <div className="flex-1 text-right">
                                     <span className="font-bold text-indigo-900 text-lg">{partido.Local}</span>
@@ -309,8 +382,10 @@ function CalendarioPage() {
                                 </div>
 
                                 {partido.Instalacion && (
-                                  <div className="mt-2 text-center text-sm text-indigo-600">
-                                    🏟️ {partido.Instalacion}
+                                  <div className="mt-3 text-center">
+                                    <span className="inline-block px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg text-sm font-semibold border border-indigo-200">
+                                      Instalación: {partido.Instalacion}
+                                    </span>
                                   </div>
                                 )}
                               </div>
@@ -325,14 +400,11 @@ function CalendarioPage() {
                 {/* Equipos Participantes */}
                 {detalleCampeonato.Equipos?.length > 0 && (
                   <div className="bg-white rounded-2xl shadow-lg p-6 border-2 border-indigo-200">
-                    <div className="flex items-center gap-2 mb-4">
-                      <span className="text-2xl">👥</span>
-                      <h3 className="text-xl font-bold text-indigo-900">Equipos Participantes</h3>
-                    </div>
+                    <h3 className="text-xl font-bold text-indigo-900 mb-5 pb-3 border-b-2 border-indigo-100">Equipos Participantes</h3>
                     
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                       {detalleCampeonato.Equipos.map(equipo => (
-                        <div key={equipo.id} className="p-3 border-2 border-indigo-100 rounded-lg flex items-center gap-2 hover:bg-indigo-50 transition">
+                        <div key={equipo.id} className="p-3 border-2 border-indigo-100 rounded-lg flex items-center gap-3 hover:bg-indigo-50 hover:border-indigo-300 hover:shadow-md transition-all duration-200 cursor-pointer">
                           {equipo.Logo ? (
                             <img src={equipo.Logo} alt={equipo.Nombre} className="w-8 h-8 rounded-lg object-cover" />
                           ) : (

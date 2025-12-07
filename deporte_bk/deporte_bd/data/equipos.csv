@@ -1,11 +1,31 @@
-id,correo_delegado,nombre,logo,estado
-1,juan.perez@delegado.com,Los Leones,logo_leones.png,1
-2,maria.lopez@delegado.com,Las Aguilas,logo_aguilas.png,1
-3,carlos.gomez@delegado.com,Los Tigres,logo_tigres.png,1
-4,ana.torres@delegado.com,Las Panteras,logo_panteras.png,1
-5,luis.rodriguez@delegado.com,Los Lobos,logo_lobos.png,1
-6,sofia.martinez@delegado.com,Las Cobras,logo_cobras.png,1
-7,pedro.sanchez@delegado.com,Los Osos,logo_osos.png,1
-8,lucia.diaz@delegado.com,Las Hienas,logo_hienas.png,1
-9,miguel.fernandez@delegado.com,Los Tiburones,logo_tiburones.png,1
-10,elena.ruiz@delegado.com,Las Orcas,logo_orcas.png,1
+id,id_usuario,nombre,logo,estado
+1,2001,Tigres FC,logo_futbol_1.png,1
+2,2002,Águilas United,logo_futbol_2.png,1
+3,2003,Leones FC,logo_futbol_3.png,1
+4,2004,Pumas Athletic,logo_futbol_4.png,1
+5,2005,Cóndores SC,logo_futbol_5.png,1
+6,2006,Jaguares FC,logo_futbol_6.png,1
+7,2007,Halcones United,logo_futbol_7.png,1
+8,2008,Zorros FC,logo_futbol_8.png,1
+9,2009,Osos Polares FC,logo_futbol_9.png,1
+10,2010,Búfalos SC,logo_futbol_10.png,1
+11,2011,Bulls Universitarios,logo_basket_1.png,1
+12,2012,Lakers Academy,logo_basket_2.png,1
+13,2013,Warriors UC,logo_basket_3.png,1
+14,2014,Celtics Junior,logo_basket_4.png,1
+15,2015,Heat University,logo_basket_5.png,1
+16,2016,Spurs College,logo_basket_6.png,1
+17,2017,Rockets UC,logo_basket_7.png,1
+18,2018,Mavericks Team,logo_basket_8.png,1
+19,2019,Nets Academy,logo_basket_9.png,1
+20,2020,Suns University,logo_basket_10.png,1
+21,2021,Spike Masters,logo_voley_1.png,1
+22,2022,Volley Stars,logo_voley_2.png,1
+23,2023,Net Warriors,logo_voley_3.png,1
+24,2024,Ace Attackers,logo_voley_4.png,1
+25,2025,Block Busters,logo_voley_5.png,1
+26,2026,Set Champions,logo_voley_6.png,1
+27,2027,Court Kings,logo_voley_7.png,1
+28,2028,Rally Raiders,logo_voley_8.png,1
+29,2029,Smash United,logo_voley_9.png,1
+30,2030,Serve Heroes,logo_voley_10.png,1
