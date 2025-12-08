@@ -1,1 +1,1 @@
-web: python manage.py migrate && python manage.py poblacion && gunicorn deporte_bk.wsgi --log-file -
+web: python manage.py migrate && python manage.py poblacion && python manage.py train_ml && gunicorn deporte_bk.wsgi --log-file -

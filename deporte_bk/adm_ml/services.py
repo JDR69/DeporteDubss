@@ -78,6 +78,7 @@ class MatchPredictor:
             'avg_goals_scored': (stats['goals_scored'] or 0) / total,
             'avg_goals_conceded': (stats['goals_conceded'] or 0) / total,
             'win_rate': (stats['wins'] or 0) / total
+        }
 
     def prepare_dataset(self):
         """
