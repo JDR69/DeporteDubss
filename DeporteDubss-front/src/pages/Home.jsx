@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getCampeonatos, getDeportes, getHistoriales, getEquipos, getPartidos, getFixtures, getResultados } from '../api/auth'
+import axiosInstance from '../api/axiosInstance'
 import groqService from '../services/groqService'
 
 const Home = () => {
@@ -1258,80 +1259,89 @@ Genera un análisis detallado de máximo 150 palabras que incluya:
                                 <p className="text-blue-700">Basado en análisis de Machine Learning</p>
                             </div>
 
-                            {/* Marcador predicho */}
-                            <div className="bg-white rounded-2xl p-8 mb-6 shadow-xl">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex-1 text-center">
-                                        <div className="text-2xl font-bold text-[#065F46] mb-2">{prediccionPartido.partido.equipoLocal.Nombre}</div>
-                                        <div className="text-6xl font-black text-blue-600">{prediccionPartido.marcadorPredicho.local}</div>
-                                    </div>
-                                    <div className="px-6">
-                                        <div className="text-4xl font-black text-gray-400">-</div>
-                                    </div>
-                                    <div className="flex-1 text-center">
-                                        <div className="text-2xl font-bold text-[#065F46] mb-2">{prediccionPartido.partido.equipoVisitante.Nombre}</div>
-                                        <div className="text-6xl font-black text-cyan-600">{prediccionPartido.marcadorPredicho.visitante}</div>
-                                    </div>
+                            {prediccionPartido.error ? (
+                                <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-md" role="alert">
+                                    <p className="font-bold">No se pudo generar la predicción</p>
+                                    <p>{prediccionPartido.mensaje}</p>
                                 </div>
-                            </div>
+                            ) : (
+                                <>
+                                    {/* Marcador predicho */}
+                                    <div className="bg-white rounded-2xl p-8 mb-6 shadow-xl">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex-1 text-center">
+                                                <div className="text-2xl font-bold text-[#065F46] mb-2">{prediccionPartido.partido.equipoLocal.Nombre}</div>
+                                                <div className="text-6xl font-black text-blue-600">{prediccionPartido.marcadorPredicho.local}</div>
+                                            </div>
+                                            <div className="px-6">
+                                                <div className="text-4xl font-black text-gray-400">-</div>
+                                            </div>
+                                            <div className="flex-1 text-center">
+                                                <div className="text-2xl font-bold text-[#065F46] mb-2">{prediccionPartido.partido.equipoVisitante.Nombre}</div>
+                                                <div className="text-6xl font-black text-cyan-600">{prediccionPartido.marcadorPredicho.visitante}</div>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                            {/* Probabilidades */}
-                            <div className="grid grid-cols-3 gap-4 mb-6">
-                                <div className="bg-white rounded-xl p-4 text-center shadow-lg">
-                                    <div className="text-3xl font-bold text-blue-600 mb-1">{prediccionPartido.probabilidades.victoriaLocal}</div>
-                                    <div className="text-sm font-semibold text-[#065F46]">Victoria Local</div>
-                                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                                        <div className="bg-blue-600 h-2 rounded-full" style={{ width: prediccionPartido.probabilidades.victoriaLocal }}></div>
+                                    {/* Probabilidades */}
+                                    <div className="grid grid-cols-3 gap-4 mb-6">
+                                        <div className="bg-white rounded-xl p-4 text-center shadow-lg">
+                                            <div className="text-3xl font-bold text-blue-600 mb-1">{prediccionPartido.probabilidades.victoriaLocal}</div>
+                                            <div className="text-sm font-semibold text-[#065F46]">Victoria Local</div>
+                                            <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                                <div className="bg-blue-600 h-2 rounded-full" style={{ width: prediccionPartido.probabilidades.victoriaLocal }}></div>
+                                            </div>
+                                        </div>
+                                        <div className="bg-white rounded-xl p-4 text-center shadow-lg">
+                                            <div className="text-3xl font-bold text-yellow-600 mb-1">{prediccionPartido.probabilidades.empate}</div>
+                                            <div className="text-sm font-semibold text-[#065F46]">Empate</div>
+                                            <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                                <div className="bg-yellow-600 h-2 rounded-full" style={{ width: prediccionPartido.probabilidades.empate }}></div>
+                                            </div>
+                                        </div>
+                                        <div className="bg-white rounded-xl p-4 text-center shadow-lg">
+                                            <div className="text-3xl font-bold text-cyan-600 mb-1">{prediccionPartido.probabilidades.victoriaVisitante}</div>
+                                            <div className="text-sm font-semibold text-[#065F46]">Victoria Visitante</div>
+                                            <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                                <div className="bg-cyan-600 h-2 rounded-full" style={{ width: prediccionPartido.probabilidades.victoriaVisitante }}></div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="bg-white rounded-xl p-4 text-center shadow-lg">
-                                    <div className="text-3xl font-bold text-yellow-600 mb-1">{prediccionPartido.probabilidades.empate}</div>
-                                    <div className="text-sm font-semibold text-[#065F46]">Empate</div>
-                                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                                        <div className="bg-yellow-600 h-2 rounded-full" style={{ width: prediccionPartido.probabilidades.empate }}></div>
-                                    </div>
-                                </div>
-                                <div className="bg-white rounded-xl p-4 text-center shadow-lg">
-                                    <div className="text-3xl font-bold text-cyan-600 mb-1">{prediccionPartido.probabilidades.victoriaVisitante}</div>
-                                    <div className="text-sm font-semibold text-[#065F46]">Victoria Visitante</div>
-                                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                                        <div className="bg-cyan-600 h-2 rounded-full" style={{ width: prediccionPartido.probabilidades.victoriaVisitante }}></div>
-                                    </div>
-                                </div>
-                            </div>
 
-                            {/* Confianza y factores */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                                <div className="bg-white rounded-xl p-4 shadow-lg">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <span className="text-sm font-bold text-[#065F46]">Confianza de la Predicción</span>
-                                        <span className="text-2xl font-black text-emerald-600">{prediccionPartido.confianza}</span>
+                                    {/* Confianza y factores */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                        <div className="bg-white rounded-xl p-4 shadow-lg">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <span className="text-sm font-bold text-[#065F46]">Confianza de la Predicción</span>
+                                                <span className="text-2xl font-black text-emerald-600">{prediccionPartido.confianza}</span>
+                                            </div>
+                                            <div className="w-full bg-gray-200 rounded-full h-3">
+                                                <div className="bg-gradient-to-r from-emerald-500 to-teal-500 h-3 rounded-full" style={{ width: prediccionPartido.confianza }}></div>
+                                            </div>
+                                        </div>
+                                        <div className="bg-white rounded-xl p-4 shadow-lg">
+                                            <div className="text-sm font-bold text-[#065F46] mb-2">Factores Clave:</div>
+                                            <ul className="space-y-1">
+                                                {prediccionPartido.factoresClave.map((factor, i) => (
+                                                    <li key={i} className="text-sm text-[#065F46] flex items-center gap-2">
+                                                        <span className="text-emerald-600">✓</span>
+                                                        {factor}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
                                     </div>
-                                    <div className="w-full bg-gray-200 rounded-full h-3">
-                                        <div className="bg-gradient-to-r from-emerald-500 to-teal-500 h-3 rounded-full" style={{ width: prediccionPartido.confianza }}></div>
-                                    </div>
-                                </div>
-                                <div className="bg-white rounded-xl p-4 shadow-lg">
-                                    <div className="text-sm font-bold text-[#065F46] mb-2">Factores Clave:</div>
-                                    <ul className="space-y-1">
-                                        {prediccionPartido.factoresClave.map((factor, i) => (
-                                            <li key={i} className="text-sm text-[#065F46] flex items-center gap-2">
-                                                <span className="text-emerald-600">✓</span>
-                                                {factor}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </div>
 
-                            {/* Análisis */}
-                            <div className="bg-white rounded-xl p-6 shadow-lg">
-                                <h4 className="text-lg font-bold text-[#065F46] mb-3 flex items-center gap-2">
-                                    <span>📝</span>
-                                    Análisis del Partido
-                                </h4>
-                                <p className="text-[#065F46] leading-relaxed">{prediccionPartido.analisis}</p>
-                            </div>
+                                    {/* Análisis */}
+                                    <div className="bg-white rounded-xl p-6 shadow-lg">
+                                        <h4 className="text-lg font-bold text-[#065F46] mb-3 flex items-center gap-2">
+                                            <span>📝</span>
+                                            Análisis del Partido
+                                        </h4>
+                                        <p className="text-[#065F46] leading-relaxed">{prediccionPartido.analisis}</p>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     )}
                 </div>
