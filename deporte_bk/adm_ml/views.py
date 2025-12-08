@@ -1,10 +1,13 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import AllowAny
 from .services import MatchPredictor
 from deporte_bd.models import Equipo
 
 class PredictMatchView(APIView):
+    permission_classes = [AllowAny]
+
     def post(self, request):
         local_id = request.data.get('local_id')
         visit_id = request.data.get('visit_id')
