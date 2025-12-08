@@ -559,34 +559,46 @@ class Command(BaseCommand):
         # Generar 4 Campeonatos Finalizados
         for i in range(1, 5):
             nombre_camp = f'Campeonato Histórico {2020+i}'
-            camp, created = Campeonato.objects.get_or_create(
+            
+            # Buscar si ya existe por nombre para no duplicar
+            if Campeonato.objects.filter(Nombre=nombre_camp).exists():
+                continue
+
+            # Calcular ID seguro
+            ultimo_camp = Campeonato.objects.order_by('-id').first()
+            nuevo_id = (ultimo_camp.id + 1) if ultimo_camp else 1
+
+            camp = Campeonato.objects.create(
+                id=nuevo_id,
+                IDUsuario=org,
+                IDDeporte=deporte,
                 Nombre=nombre_camp,
-                defaults={
-                    'IDUsuario': org,
-                    'IDDeporte': deporte,
-                    'Fecha_Inicio': date(2020+i, 1, 1),
-                    'Fecha_Fin': date(2020+i, 6, 1),
-                    'Estado': 'Finalizado'
-                }
+                Fecha_Inicio=date(2020+i, 1, 1),
+                Fecha_Fin=date(2020+i, 6, 1),
+                Estado='Finalizado'
             )
-            if created:
-                self._generar_torneo_completo(camp, equipos, finalizado=True)
+            self._generar_torneo_completo(camp, equipos, finalizado=True)
 
         # Generar 2 Campeonatos En Curso
         for i in range(1, 3):
             nombre_camp = f'Torneo Apertura {2025+i}'
-            camp, created = Campeonato.objects.get_or_create(
+            
+            if Campeonato.objects.filter(Nombre=nombre_camp).exists():
+                continue
+
+            ultimo_camp = Campeonato.objects.order_by('-id').first()
+            nuevo_id = (ultimo_camp.id + 1) if ultimo_camp else 1
+
+            camp = Campeonato.objects.create(
+                id=nuevo_id,
+                IDUsuario=org,
+                IDDeporte=deporte,
                 Nombre=nombre_camp,
-                defaults={
-                    'IDUsuario': org,
-                    'IDDeporte': deporte,
-                    'Fecha_Inicio': date(2025, 1, 1),
-                    'Fecha_Fin': date(2025, 12, 31),
-                    'Estado': 'En Curso'
-                }
+                Fecha_Inicio=date(2025, 1, 1),
+                Fecha_Fin=date(2025, 12, 31),
+                Estado='En Curso'
             )
-            if created:
-                self._generar_torneo_completo(camp, equipos, finalizado=False)
+            self._generar_torneo_completo(camp, equipos, finalizado=False)
 
     def _generar_torneo_completo(self, campeonato, equipos, finalizado=True):
         import random
@@ -604,7 +616,12 @@ class Command(BaseCommand):
         fecha_base = campeonato.Fecha_Inicio
 
         for fecha_idx in range(num_fechas):
+            # Calcular ID seguro para Fixture
+            ultimo_fix = Fixture.objects.order_by('-id').first()
+            nuevo_fix_id = (ultimo_fix.id + 1) if ultimo_fix else 1
+
             fixture = Fixture.objects.create(
+                id=nuevo_fix_id,
                 IDCampeonato=campeonato,
                 Numero=fecha_idx + 1,
                 Fecha=fecha_base + timedelta(days=fecha_idx*7)
@@ -623,7 +640,12 @@ class Command(BaseCommand):
                     if fecha_idx > (num_fechas * 0.7):
                         jugar = False
                 
+                # Calcular ID seguro para Partido
+                ultimo_partido = Partido.objects.order_by('-id').first()
+                nuevo_partido_id = (ultimo_partido.id + 1) if ultimo_partido else 1
+
                 partido = Partido(
+                    id=nuevo_partido_id,
                     IDFixture=fixture,
                     IDInstalacion=Instalacion.objects.first(),
                     IDEquipo_Local=local,
@@ -642,7 +664,12 @@ class Command(BaseCommand):
                     goles_local = max(0, goles_local)
                     goles_visita = max(0, goles_visita)
                     
+                    # Calcular ID seguro para Resultado
+                    ultimo_res = Resultado.objects.order_by('-id').first()
+                    nuevo_res_id = (ultimo_res.id + 1) if ultimo_res else 1
+
                     resultado = Resultado.objects.create(
+                        id=nuevo_res_id,
                         Goles_Local=goles_local,
                         Goles_Visitante=goles_visita
                     )
@@ -661,7 +688,13 @@ class Command(BaseCommand):
         for equipo in equipos:
             if equipo.id in stats:
                 s = stats[equipo.id]
+                
+                # Calcular ID seguro para Historial
+                ultimo_hist = Historial.objects.order_by('-id').first()
+                nuevo_hist_id = (ultimo_hist.id + 1) if ultimo_hist else 1
+
                 Historial.objects.create(
+                    id=nuevo_hist_id,
                     IDCampeonato=campeonato,
                     IDEquipo=equipo,
                     PJ=s['PJ'], PG=s['PG'], PE=s['PE'], PP=s['PP'],
