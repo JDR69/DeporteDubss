@@ -356,7 +356,7 @@ Genera SOLO un JSON válido (sin markdown, sin explicaciones adicionales) con la
 
         try {
             // Llamada a nuestra API de Machine Learning
-            const response = await axiosInstance.post('/ml/predecir/', {
+            const response = await axiosInstance.post('/api/ml/predecir/', {
                 local_id: partido.equipoLocal.id,
                 visit_id: partido.equipoVisitante.id
             });
