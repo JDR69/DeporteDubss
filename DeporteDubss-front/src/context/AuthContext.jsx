@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(true); 
       
       // Llamada real al API de login
-      const response = await fetch('http://127.0.0.1:8000/api/auth/login/', {
+      const response = await fetch('https://deportedubss-production.up.railway.app/api/auth/login/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -96,7 +96,7 @@ export const AuthProvider = ({ children }) => {
       // Llamar al endpoint de logout si existe
       const token = localStorage.getItem('access_token');
       if (token) {
-        await fetch('http://127.0.0.1:8000/api/auth/logout/', {
+        await fetch('https://deportedubss-production.up.railway.app/api/auth/logout/', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
