@@ -1,7 +1,7 @@
 
 import axios from 'axios';
 
-const BASE_URL = 'https://deportedubss-production.up.railway.app/'; // Cambia el puerto si tu backend usa otro
+const BASE_URL = 'https://deportedubss-production.up.railway.app/'; // Camb22ia el puerto si tu backend usa otro
 
 const axiosInstance = axios.create({
 	baseURL: BASE_URL,
