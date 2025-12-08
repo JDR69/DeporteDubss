@@ -30,6 +30,8 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     # Usuarios app auth endpoints
     path('api/auth/', include('usuarios.urls')),
+    # Machine Learning endpoints
+    path('api/ml/', include('adm_ml.urls')),
     # adm_recursos app API (moved from deporte_bd)
     path('api/recursos/', include('adm_recursos.urls')),
     # adm_deportiva app API (incidencias CRUD)

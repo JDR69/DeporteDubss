@@ -354,94 +354,40 @@ Genera SOLO un JSON válido (sin markdown, sin explicaciones adicionales) con la
         setPrediccionPartido(null);
 
         try {
-            // Obtener historial de ambos equipos
-            const historialLocal = historiales.filter(h => h.IDEquipo === partido.equipoLocal.id);
-            const historialVisitante = historiales.filter(h => h.IDEquipo === partido.equipoVisitante.id);
-
-            // Calcular estadísticas
-            const statsLocal = {
-                totalPartidos: historialLocal.reduce((sum, h) => sum + h.PJ, 0),
-                totalGoles: historialLocal.reduce((sum, h) => sum + h.GF, 0),
-                golesRecibidos: historialLocal.reduce((sum, h) => sum + h.GC, 0),
-                victorias: historialLocal.reduce((sum, h) => sum + h.PG, 0),
-                empates: historialLocal.reduce((sum, h) => sum + h.PE, 0),
-                derrotas: historialLocal.reduce((sum, h) => sum + h.PP, 0),
-            };
-
-            const statsVisitante = {
-                totalPartidos: historialVisitante.reduce((sum, h) => sum + h.PJ, 0),
-                totalGoles: historialVisitante.reduce((sum, h) => sum + h.GF, 0),
-                golesRecibidos: historialVisitante.reduce((sum, h) => sum + h.GC, 0),
-                victorias: historialVisitante.reduce((sum, h) => sum + h.PG, 0),
-                empates: historialVisitante.reduce((sum, h) => sum + h.PE, 0),
-                derrotas: historialVisitante.reduce((sum, h) => sum + h.PP, 0),
-            };
-
-            const promedioGolesLocal = statsLocal.totalPartidos > 0 ? (statsLocal.totalGoles / statsLocal.totalPartidos).toFixed(2) : 0;
-            const promedioGolesVisitante = statsVisitante.totalPartidos > 0 ? (statsVisitante.totalGoles / statsVisitante.totalPartidos).toFixed(2) : 0;
-
-            const prompt = `Eres un analista deportivo experto. Predice el resultado del siguiente partido:
-
-**${partido.equipoLocal.Nombre}** (Local) vs **${partido.equipoVisitante.Nombre}** (Visitante)
-Fecha: ${new Date(partido.fecha).toLocaleDateString('es-ES')}
-Jornada: ${partido.jornada}
-
-Estadísticas ${partido.equipoLocal.Nombre}:
-- Partidos jugados: ${statsLocal.totalPartidos}
-- Victorias: ${statsLocal.victorias} | Empates: ${statsLocal.empates} | Derrotas: ${statsLocal.derrotas}
-- Goles a favor: ${statsLocal.totalGoles} (Promedio: ${promedioGolesLocal}/partido)
-- Goles en contra: ${statsLocal.golesRecibidos}
-
-Estadísticas ${partido.equipoVisitante.Nombre}:
-- Partidos jugados: ${statsVisitante.totalPartidos}
-- Victorias: ${statsVisitante.victorias} | Empates: ${statsVisitante.empates} | Derrotas: ${statsVisitante.derrotas}
-- Goles a favor: ${statsVisitante.totalGoles} (Promedio: ${promedioGolesVisitante}/partido)
-- Goles en contra: ${statsVisitante.golesRecibidos}
-
-Genera SOLO un JSON válido (sin markdown) con la siguiente estructura:
-{
-  "marcadorPredicho": {
-    "local": número,
-    "visitante": número
-  },
-  "probabilidades": {
-    "victoriaLocal": "XX.X%",
-    "empate": "XX.X%",
-    "victoriaVisitante": "XX.X%"
-  },
-  "confianza": "XX.X%",
-  "factoresClave": ["factor 1", "factor 2", "factor 3"],
-  "analisis": "Análisis detallado del partido en 2-3 líneas"
-}`;
-
-            const response = await groqService.generateResponse(prompt, 'llama-3.3-70b-versatile', {
-                temperature: 0.4,
-                max_tokens: 800
+            // Llamada a nuestra API de Machine Learning
+            const response = await axiosInstance.post('/ml/predecir/', {
+                local_id: partido.equipoLocal.id,
+                visit_id: partido.equipoVisitante.id
             });
 
-            // Parsear respuesta
-            let prediccionData;
-            try {
-                const cleanResponse = response.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-                prediccionData = JSON.parse(cleanResponse);
-            } catch (e) {
-                console.error('Error parsing JSON:', e);
-                // Predicción de fallback
-                prediccionData = {
-                    marcadorPredicho: {
-                        local: Math.round(parseFloat(promedioGolesLocal)),
-                        visitante: Math.round(parseFloat(promedioGolesVisitante))
-                    },
-                    probabilidades: {
-                        victoriaLocal: "45.5%",
-                        empate: "25.0%",
-                        victoriaVisitante: "29.5%"
-                    },
-                    confianza: "72.3%",
-                    factoresClave: ["Factor local", "Promedio de goles", "Historial reciente"],
-                    analisis: "Predicción basada en promedios históricos de ambos equipos."
-                };
-            }
+            const mlData = response.data.prediction;
+
+            // Estructurar datos para la UI
+            const prediccionData = {
+                marcadorPredicho: {
+                    // Estimación simple basada en probabilidades (solo visual)
+                    local: mlData.local_win_prob > mlData.visit_win_prob ? 2 : (mlData.local_win_prob < mlData.visit_win_prob ? 0 : 1),
+                    visitante: mlData.visit_win_prob > mlData.local_win_prob ? 2 : (mlData.visit_win_prob < mlData.local_win_prob ? 0 : 1)
+                },
+                probabilidades: {
+                    victoriaLocal: `${mlData.local_win_prob}%`,
+                    empate: `${mlData.draw_prob}%`,
+                    victoriaVisitante: `${mlData.visit_win_prob}%`
+                },
+                confianza: `${Math.max(mlData.local_win_prob, mlData.visit_win_prob, mlData.draw_prob)}%`,
+                factoresClave: [
+                    "Rendimiento histórico reciente",
+                    "Promedio de goles local/visitante",
+                    "Efectividad defensiva"
+                ],
+                analisis: `El modelo de IA (Random Forest) ha analizado el historial de ambos equipos. ${
+                    mlData.local_win_prob > mlData.visit_win_prob 
+                    ? `Se inclina por una victoria de ${partido.equipoLocal.Nombre} con un ${mlData.local_win_prob}% de probabilidad.` 
+                    : mlData.visit_win_prob > mlData.local_win_prob
+                    ? `Favorece a ${partido.equipoVisitante.Nombre} con un ${mlData.visit_win_prob}% de probabilidad.`
+                    : "Pronostica un partido muy reñido con alta probabilidad de empate."
+                }`
+            };
 
             setPrediccionPartido({
                 ...prediccionData,
@@ -450,6 +396,11 @@ Genera SOLO un JSON válido (sin markdown) con la siguiente estructura:
 
         } catch (error) {
             console.error('Error prediciendo partido:', error);
+            // Fallback si falla la API o no hay suficientes datos
+            setPrediccionPartido({
+                error: true,
+                mensaje: "No hay suficientes datos históricos para generar una predicción confiable con IA."
+            });
         }
 
         setLoadingPartido(false);
