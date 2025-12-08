@@ -82,6 +82,9 @@ class Command(BaseCommand):
             
             # 12. HISTORIALES
             self.import_historiales()
+
+            # ============ GENERACIÓN DE DATOS ML ============
+            self.generar_datos_ml()
             
             self.stdout.write(self.style.SUCCESS('\n' + '='*70))
             self.stdout.write(self.style.SUCCESS('✓ POBLACIÓN COMPLETADA EXITOSAMENTE'))
@@ -522,3 +525,160 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS(
                 f'   ✓ Historiales: {created} creados, {updated} actualizados\n'
             ))
+
+    def generar_datos_ml(self):
+        """Genera datos sintéticos para entrenar el modelo de ML"""
+        self.stdout.write(self.style.WARNING('\n>>> GENERANDO DATOS SINTÉTICOS PARA ML\n'))
+        import random
+        from datetime import timedelta, date
+
+        # Asegurar Organizador
+        org = Organizador.objects.first()
+        if not org:
+            self.stdout.write(self.style.ERROR('No hay organizadores. Ejecuta la importación básica primero.'))
+            return
+
+        # Asegurar Deporte (Fútbol 11 preferiblemente)
+        deporte = Deporte.objects.filter(Nombre__icontains='Futbol').first()
+        if not deporte:
+            deporte = Deporte.objects.first()
+        
+        # Asegurar Equipos (Mínimo 8)
+        equipos = list(Equipo.objects.all())
+        if len(equipos) < 8:
+            # Crear equipos dummy si faltan
+            delegado = Delegado.objects.first()
+            for i in range(len(equipos), 8):
+                nuevo_equipo = Equipo.objects.create(
+                    IDUsuario=delegado,
+                    Nombre=f'Equipo ML {i+1}',
+                    Estado=1
+                )
+                equipos.append(nuevo_equipo)
+        
+        # Generar 4 Campeonatos Finalizados
+        for i in range(1, 5):
+            nombre_camp = f'Campeonato Histórico {2020+i}'
+            camp, created = Campeonato.objects.get_or_create(
+                Nombre=nombre_camp,
+                defaults={
+                    'IDUsuario': org,
+                    'IDDeporte': deporte,
+                    'Fecha_Inicio': date(2020+i, 1, 1),
+                    'Fecha_Fin': date(2020+i, 6, 1),
+                    'Estado': 'Finalizado'
+                }
+            )
+            if created:
+                self._generar_torneo_completo(camp, equipos, finalizado=True)
+
+        # Generar 2 Campeonatos En Curso
+        for i in range(1, 3):
+            nombre_camp = f'Torneo Apertura {2025+i}'
+            camp, created = Campeonato.objects.get_or_create(
+                Nombre=nombre_camp,
+                defaults={
+                    'IDUsuario': org,
+                    'IDDeporte': deporte,
+                    'Fecha_Inicio': date(2025, 1, 1),
+                    'Fecha_Fin': date(2025, 12, 31),
+                    'Estado': 'En Curso'
+                }
+            )
+            if created:
+                self._generar_torneo_completo(camp, equipos, finalizado=False)
+
+    def _generar_torneo_completo(self, campeonato, equipos, finalizado=True):
+        import random
+        from datetime import timedelta
+        
+        # Generar Fixture (Todos contra todos una vuelta)
+        equipos_random = list(equipos)
+        random.shuffle(equipos_random)
+        num_equipos = len(equipos_random)
+        num_fechas = num_equipos - 1
+        
+        # Mapa para historial
+        stats = {e.id: {'PJ':0, 'PG':0, 'PE':0, 'PP':0, 'GF':0, 'GC':0, 'Pts':0} for e in equipos_random}
+
+        fecha_base = campeonato.Fecha_Inicio
+
+        for fecha_idx in range(num_fechas):
+            fixture = Fixture.objects.create(
+                IDCampeonato=campeonato,
+                Numero=fecha_idx + 1,
+                Fecha=fecha_base + timedelta(days=fecha_idx*7)
+            )
+
+            # Partidos de la fecha
+            # Algoritmo simple de round-robin
+            for i in range(num_equipos // 2):
+                local = equipos_random[i]
+                visitante = equipos_random[num_equipos - 1 - i]
+                
+                # Decidir si se juega o no (para torneos en curso)
+                jugar = True
+                if not finalizado:
+                    # En curso: jugamos el 70% de las fechas
+                    if fecha_idx > (num_fechas * 0.7):
+                        jugar = False
+                
+                partido = Partido(
+                    IDFixture=fixture,
+                    IDInstalacion=Instalacion.objects.first(),
+                    IDEquipo_Local=local,
+                    IDEquipo_Visitante=visitante
+                )
+                
+                if jugar:
+                    # Generar resultado con sesgo realista
+                    # Equipos con ID par son "mejores" para dar consistencia
+                    fuerza_local = 1.5 if local.id % 2 == 0 else 1.0
+                    fuerza_visita = 1.5 if visitante.id % 2 == 0 else 1.0
+                    
+                    goles_local = int(random.gauss(1.5 * fuerza_local, 1.0))
+                    goles_visita = int(random.gauss(1.0 * fuerza_visita, 1.0))
+                    
+                    goles_local = max(0, goles_local)
+                    goles_visita = max(0, goles_visita)
+                    
+                    resultado = Resultado.objects.create(
+                        Goles_Local=goles_local,
+                        Goles_Visitante=goles_visita
+                    )
+                    partido.IDResultado = resultado
+                    
+                    # Actualizar stats
+                    self._update_stats(stats[local.id], goles_local, goles_visita)
+                    self._update_stats(stats[visitante.id], goles_visita, goles_local)
+                
+                partido.save()
+
+            # Rotar equipos para la siguiente fecha (Round Robin)
+            equipos_random.insert(1, equipos_random.pop())
+
+        # Guardar Historiales
+        for equipo in equipos:
+            if equipo.id in stats:
+                s = stats[equipo.id]
+                Historial.objects.create(
+                    IDCampeonato=campeonato,
+                    IDEquipo=equipo,
+                    PJ=s['PJ'], PG=s['PG'], PE=s['PE'], PP=s['PP'],
+                    GF=s['GF'], GC=s['GC'], DG=s['GF']-s['GC'],
+                    Puntos=s['Pts'],
+                    Posicion=0 # Se podría calcular el ranking
+                )
+
+    def _update_stats(self, stat, gf, gc):
+        stat['PJ'] += 1
+        stat['GF'] += gf
+        stat['GC'] += gc
+        if gf > gc:
+            stat['PG'] += 1
+            stat['Pts'] += 3
+        elif gf == gc:
+            stat['PE'] += 1
+            stat['Pts'] += 1
+        else:
+            stat['PP'] += 1
